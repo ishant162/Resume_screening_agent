@@ -1,0 +1,11 @@
+Senior AI Engineer
+
+Requirements:
+- 3+ years Python experience
+- TensorFlow or PyTorch
+- Machine Learning expertise
+- Bachelor's in Computer Science
+
+Responsibilities:
+- Build ML models
+- Deploy to production

@@ -1,0 +1,34 @@
+# Core
+langgraph
+langchain
+langchain-openai
+langchain-core
+langchain-community
+
+# Pydantic
+pydantic
+pydantic[email]
+pydantic-settings
+
+# PDF Processing
+PyPDF2  
+
+# Document Generation
+python-docx
+reportlab
+markdown
+
+# NLP & Text Processing
+spacy
+nltk
+
+# Data Processing
+pandas
+numpy
+
+# Utilities
+python-dotenv
+
+# UI    
+streamlit   
+gradio
