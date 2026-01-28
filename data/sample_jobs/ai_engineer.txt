@@ -1,11 +1,42 @@
-Senior AI Engineer
+Senior Applied AI Engineer
+
+We are seeking an experienced Senior Applied AI Engineer to join our innovative team and help build cutting-edge AI solutions.
 
 Requirements:
-- 3+ years Python experience
-- TensorFlow or PyTorch
-- Machine Learning expertise
-- Bachelor's in Computer Science
+
+Technical Skills:
+- Must Have:
+  * 5+ years of Python programming experience
+  * Strong experience with TensorFlow or PyTorch
+  * Expertise in Machine Learning and Deep Learning
+  * Experience with NLP and/or Computer Vision
+  * Proficiency in SQL and database management
+  
+- Nice to Have:
+  * Experience with LangChain, LangGraph, or similar frameworks
+  * Cloud platform experience (AWS, GCP, or Azure)
+  * Docker and Kubernetes
+  * MLOps and model deployment experience
+  * Experience with Large Language Models (LLMs)
+
+Experience:
+- Minimum 5 years of professional experience in AI/ML engineering
+- Experience building and deploying production ML systems
+- Track record of leading technical projects
+- Experience mentoring junior engineers
+
+Education:
+- Bachelor's degree in Computer Science, Engineering, or related field (required)
+- Master's degree preferred
+- Relevant certifications are a plus
 
 Responsibilities:
-- Build ML models
-- Deploy to production
+- Design, develop, and deploy advanced AI/ML models
+- Lead technical architecture decisions for AI systems
+- Collaborate with cross-functional teams to deliver solutions
+- Mentor and guide junior team members
+- Stay current with latest AI/ML research and technologies
+- Optimize model performance and scalability
+
+About Us:
+We're a fast-growing tech company working on innovative AI products that impact millions of users. We offer competitive compensation, flexible work environment, and opportunities for growth.

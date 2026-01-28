@@ -32,3 +32,19 @@ python-dotenv
 # UI    
 streamlit   
 gradio
+
+# Web Search & Scraping
+duckduckgo-search==6.3.5
+requests==2.32.3
+beautifulsoup4==4.12.3
+
+# GitHub API
+PyGithub==2.5.0
+
+# Caching for API calls
+requests-cache==1.2.1
+
+# Additional utilities
+python-dateutil==2.9.0
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.26.1
