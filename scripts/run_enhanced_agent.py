@@ -36,7 +36,7 @@ def load_resumes(resume_paths: list) -> tuple:
     for path in resume_paths:
         path_obj = Path(path)
         if not path_obj.exists():
-            print(f"⚠️  Warning: {path} not found, skipping...")
+            print(f"Warning: {path} not found, skipping...")
             continue
 
         with open(path, 'rb') as f:
@@ -88,16 +88,16 @@ def print_summary(result: dict):
 
     # Job info
     job_req = result.get("job_requirements", {})
-    print(f"\n📋 Position: {job_req.get('job_title', 'N/A')}")
+    print(f"\nPosition: {job_req.get('job_title', 'N/A')}")
 
     # Candidates processed
     candidates = result.get("candidates", [])
-    print(f"👥 Candidates Screened: {len(candidates)}")
+    print(f"Candidates Screened: {len(candidates)}")
 
     # Tool usage summary
     tool_plan = result.get("tool_plan", {})
     if tool_plan:
-        print("\n🔧 Tool Usage:")
+        print("\nTool Usage:")
         web_search_count = sum(1 for plan in tool_plan.values() if "web_search" in plan.get("tools", []))
         github_count = sum(1 for plan in tool_plan.values() if "github" in plan.get("tools", []))
         taxonomy_count = sum(1 for plan in tool_plan.values() if "skill_taxonomy" in plan.get("tools", []))
@@ -109,7 +109,7 @@ def print_summary(result: dict):
     # Quality check
     quality_check = result.get("quality_check", {})
     if quality_check:
-        print("\n✅ Quality Check:")
+        print("\nQuality Check:")
         print(f"  Confidence: {quality_check.get('confidence', 0):.0%}")
         print(f"  Re-analysis needed: {quality_check.get('needs_reanalysis', False)}")
         reanalysis_count = result.get("reanalysis_count", 0)
@@ -119,7 +119,7 @@ def print_summary(result: dict):
     # Bias analysis
     bias_analysis = result.get("bias_analysis", {})
     if bias_analysis:
-        print("\n⚖️  Bias Analysis:")
+        print("\nBias Analysis:")
         print(f"  Bias Score: {bias_analysis.get('bias_score', 0):.1f}/100 (lower is better)")
         print(f"  Assessment: {bias_analysis.get('fairness_assessment', 'N/A')}")
 
@@ -147,7 +147,7 @@ def print_summary(result: dict):
             print(f"   ATS Score: {ats.get('overall_score', 0):.1f}/100")
 
     # Show all rankings
-    print("\n📊 All Rankings:")
+    print("\nAll Rankings:")
     for rc in ranked:
         cs = rc.get("candidate_score", {})
         rank = rc.get("rank", "?")
@@ -207,32 +207,32 @@ Examples:
 
     # Validate inputs
     if not Path(args.job).exists():
-        print(f"❌ Error: Job description file not found: {args.job}")
+        print(f"Error: Job description file not found: {args.job}")
         sys.exit(1)
 
     print("="*80)
     print("ENHANCED AGENTIC RESUME SCREENING AGENT")
     print("="*80)
-    print(f"\n📋 Job Description: {args.job}")
-    print(f"📄 Resumes to screen: {len(args.resumes)}")
+    print(f"\nJob Description: {args.job}")
+    print(f"Resumes to screen: {len(args.resumes)}")
     for resume in args.resumes:
         print(f"   - {resume}")
-    print(f"💾 Output directory: {args.output}")
+    print(f"Output directory: {args.output}")
     print("\n" + "="*80)
     print("STARTING ENHANCED WORKFLOW...")
     print("="*80 + "\n")
 
     try:
         # Load data
-        print("📂 Loading files...")
+        print("Loading files...")
         job_description = load_job_description(args.job)
         resumes, filenames = load_resumes(args.resumes)
 
         if not resumes:
-            print("❌ Error: No valid resume files found")
+            print("Error: No valid resume files found")
             sys.exit(1)
 
-        print(f"✅ Loaded job description and {len(resumes)} resumes\n")
+        print(f"Loaded job description and {len(resumes)} resumes\n")
 
         # Create initial state
         initial_state = {
@@ -245,48 +245,48 @@ Examples:
         }
 
         # Create and run the enhanced graph
-        print("🤖 Initializing enhanced agentic workflow...\n")
+        print("Initializing enhanced agentic workflow...\n")
         app = create_enhanced_screening_graph()
 
         print("\n" + "="*80)
-        print("▶️  EXECUTING ENHANCED WORKFLOW")
+        print("EXECUTING ENHANCED WORKFLOW")
         print("="*80 + "\n")
 
         result = app.invoke(initial_state)
 
         # Check for errors
         if result.get("errors"):
-            print("\n⚠️  Errors encountered during execution:")
+            print("\nErrors encountered during execution:")
             for error in result["errors"]:
                 print(f"   - {error}")
             print()
 
         # Save outputs
-        print("\n💾 Saving results...")
+        print("\nSaving results...")
 
         # Save report
         report = result.get("report", "")
         if report:
             report_path = save_report(report, args.output)
-            print(f"✅ Report saved: {report_path}")
+            print(f"Report saved: {report_path}")
 
         # Save questions
         questions = result.get("interview_questions", {})
         if questions:
             questions_path = save_questions(questions, args.output)
-            print(f"✅ Interview questions saved: {questions_path}")
+            print(f"Interview questions saved: {questions_path}")
 
         # Print summary
         print_summary(result)
 
-        print("\n✅ Enhanced screening complete!")
-        print(f"\n📁 View results in: {args.output}/")
+        print("\nEnhanced screening complete!")
+        print(f"\nView results in: {args.output}/")
 
     except KeyboardInterrupt:
-        print("\n\n⚠️  Interrupted by user")
+        print("\n\nInterrupted by user")
         sys.exit(1)
     except Exception as e:
-        print(f"\n❌ Error during execution: {e}")
+        print(f"\nError during execution: {e}")
         if args.verbose:
             import traceback
             traceback.print_exc()

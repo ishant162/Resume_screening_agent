@@ -29,18 +29,13 @@ class JobAnalyzer:
         Returns:
             JobRequirements object with parsed data
         """
-        # Create the prompt
         prompt = JOB_ANALYSIS_PROMPT.format(job_description=job_description)
-
-        # Call LLM
         messages = [
             SystemMessage(content="You are an expert recruiter. Extract job requirements accurately."),
             HumanMessage(content=prompt)
         ]
-
         response = self.llm.invoke(messages)
 
-        # Parse JSON response
         try:
             # Extract JSON from response (handle markdown code blocks)
             response_text = response.content
