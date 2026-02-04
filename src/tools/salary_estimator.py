@@ -41,7 +41,7 @@ class SalaryEstimator:
             "Austin": 1.1,
             "Boston": 1.2,
             "Remote": 1.0,
-            "Default": 1.0
+            "Default": 1.0,
         }
 
         # Industry multipliers
@@ -52,14 +52,10 @@ class SalaryEstimator:
             "healthcare": 1.0,
             "ecommerce": 1.0,
             "ai/ml": 1.15,
-            "default": 1.0
+            "default": 1.0,
         }
 
-    def estimate_salary(
-        self,
-        candidate_profile: dict,
-        job_requirements: dict
-    ) -> dict:
+    def estimate_salary(self, candidate_profile: dict, job_requirements: dict) -> dict:
         """
         Estimate salary range for a candidate
 
@@ -81,16 +77,20 @@ class SalaryEstimator:
                 "confidence": float
             }
         """
-        print(f"    💰 Estimating salary for {candidate_profile.get('name', 'candidate')}...")
+        print(
+            f"    💰 Estimating salary for {candidate_profile.get('name', 'candidate')}..."
+        )
 
         # Determine experience level
         experience_level = self._determine_experience_level(
             candidate_profile.get("total_experience_years", 0),
-            job_requirements.get("job_title", "")
+            job_requirements.get("job_title", ""),
         )
 
         # Get base salary range
-        base_range = self.base_salaries.get(experience_level, self.base_salaries["Mid-Level"])
+        base_range = self.base_salaries.get(
+            experience_level, self.base_salaries["Mid-Level"]
+        )
 
         # Calculate multipliers
         location = candidate_profile.get("location", "Remote")
@@ -101,8 +101,7 @@ class SalaryEstimator:
 
         # Skills premium (LLM-based)
         skills_analysis = self._analyze_skills_premium(
-            candidate_profile.get("technical_skills", []),
-            job_requirements
+            candidate_profile.get("technical_skills", []), job_requirements
         )
         skills_premium = skills_analysis["premium"]
 
@@ -112,7 +111,7 @@ class SalaryEstimator:
         adjusted_range = {
             "min": int(base_range["min"] * total_multiplier),
             "max": int(base_range["max"] * total_multiplier),
-            "median": int(base_range["median"] * total_multiplier)
+            "median": int(base_range["median"] * total_multiplier),
         }
 
         # Generate reasoning using LLM
@@ -124,8 +123,8 @@ class SalaryEstimator:
             {
                 "location": location_mult,
                 "industry": industry_mult,
-                "skills": skills_premium
-            }
+                "skills": skills_premium,
+            },
         )
 
         # Confidence based on data completeness
@@ -138,10 +137,10 @@ class SalaryEstimator:
                 "experience_level": experience_level,
                 "location_multiplier": location_mult,
                 "industry_multiplier": industry_mult,
-                "skills_premium": skills_premium
+                "skills_premium": skills_premium,
             },
             "reasoning": reasoning,
-            "confidence": confidence
+            "confidence": confidence,
         }
 
     def _determine_experience_level(self, years: float, job_title: str) -> str:
@@ -195,9 +194,7 @@ class SalaryEstimator:
         return "default"
 
     def _analyze_skills_premium(
-        self,
-        candidate_skills: list[str],
-        job_requirements: dict
+        self, candidate_skills: list[str], job_requirements: dict
     ) -> dict:
         """
         Use LLM to assess if candidate has premium/rare skills
@@ -214,8 +211,10 @@ class SalaryEstimator:
 
         try:
             messages = [
-                SystemMessage(content="You are a compensation analyst assessing skill premiums."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are a compensation analyst assessing skill premiums."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
@@ -237,7 +236,7 @@ class SalaryEstimator:
         job_requirements: dict,
         experience_level: str,
         adjusted_range: dict,
-        multipliers: dict
+        multipliers: dict,
     ) -> str:
         """Generate explanation for salary estimate using LLM"""
 
@@ -245,7 +244,9 @@ class SalaryEstimator:
             candidate_name=candidate_profile.get("name", "Candidate"),
             job_title=job_requirements.get("job_title", "Role"),
             experience_level=experience_level,
-            years_of_experience=candidate_profile.get("total_experience_years", "Unknown"),
+            years_of_experience=candidate_profile.get(
+                "total_experience_years", "Unknown"
+            ),
             location=candidate_profile.get("location", "Not specified"),
             salary_min=f"{adjusted_range['min']:,}",
             salary_max=f"{adjusted_range['max']:,}",
@@ -257,8 +258,10 @@ class SalaryEstimator:
 
         try:
             messages = [
-                SystemMessage(content="You are a compensation analyst explaining salary estimates."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are a compensation analyst explaining salary estimates."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
@@ -298,29 +301,33 @@ if __name__ == "__main__":
         "total_experience_years": 6,
         "technical_skills": ["Python", "TensorFlow", "PyTorch", "AWS", "Docker"],
         "location": "San Francisco, CA",
-        "education": [{"degree": "Master of Science"}]
+        "education": [{"degree": "Master of Science"}],
     }
 
     # Mock job
     job = {
         "job_title": "Senior ML Engineer",
-        "job_description": "Build AI/ML systems for fintech"
+        "job_description": "Build AI/ML systems for fintech",
     }
 
     result = estimator.estimate_salary(candidate, job)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("💰 SALARY ESTIMATE")
-    print("="*80)
+    print("=" * 80)
     print(f"\nCandidate: {candidate['name']}")
     print(f"Experience Level: {result['factors']['experience_level']}")
-    print(f"\nBase Range: ${result['base_range']['min']:,} - ${result['base_range']['max']:,}")
-    print(f"Adjusted Range: ${result['adjusted_range']['min']:,} - ${result['adjusted_range']['max']:,}")
+    print(
+        f"\nBase Range: ${result['base_range']['min']:,} - ${result['base_range']['max']:,}"
+    )
+    print(
+        f"Adjusted Range: ${result['adjusted_range']['min']:,} - ${result['adjusted_range']['max']:,}"
+    )
     print(f"Median Estimate: ${result['adjusted_range']['median']:,}")
     print("\nFactors:")
     print(f"  Location: {result['factors']['location_multiplier']:.2f}x")
     print(f"  Industry: {result['factors']['industry_multiplier']:.2f}x")
-    print(f"  Skills Premium: +{result['factors']['skills_premium']*100:.0f}%")
-    print(f"\nConfidence: {result['confidence']*100:.0f}%")
+    print(f"  Skills Premium: +{result['factors']['skills_premium'] * 100:.0f}%")
+    print(f"\nConfidence: {result['confidence'] * 100:.0f}%")
     print(f"\nReasoning:\n{result['reasoning']}")
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)

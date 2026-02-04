@@ -18,7 +18,9 @@ class ResumeParser:
         self.pdf_extractor = PDFExtractor()
         self.text_processor = TextProcessor()
 
-    def parse_resume(self, resume_bytes: bytes, filename: str = "resume.pdf") -> Candidate:
+    def parse_resume(
+        self, resume_bytes: bytes, filename: str = "resume.pdf"
+    ) -> Candidate:
         """
         Parse a single resume PDF
 
@@ -49,9 +51,9 @@ class ResumeParser:
         # Step 4: Merge LLM results with text processor results
         # (LLM might miss some skills, text processor catches them)
         if extracted_skills:
-            candidate_data["technical_skills"] = list(set(
-                candidate_data.get("technical_skills", []) + extracted_skills
-            ))
+            candidate_data["technical_skills"] = list(
+                set(candidate_data.get("technical_skills", []) + extracted_skills)
+            )
 
         if not candidate_data.get("email") and extracted_emails:
             candidate_data["email"] = extracted_emails[0]
@@ -62,7 +64,9 @@ class ResumeParser:
         # Step 5: Convert to Candidate model
         candidate = self._convert_to_model(candidate_data, filename)
 
-        print(f" Parsed: {candidate.name} - {len(candidate.technical_skills)} skills found")
+        print(
+            f" Parsed: {candidate.name} - {len(candidate.technical_skills)} skills found"
+        )
         return candidate
 
     def _llm_parse(self, resume_text: str) -> dict:
@@ -71,8 +75,10 @@ class ResumeParser:
         prompt = RESUME_PARSING_PROMPT.format(resume_text=resume_text)
 
         messages = [
-            SystemMessage(content="You are an expert at parsing resumes. Extract all information accurately."),
-            HumanMessage(content=prompt)
+            SystemMessage(
+                content="You are an expert at parsing resumes. Extract all information accurately."
+            ),
+            HumanMessage(content=prompt),
         ]
 
         response = self.llm.invoke(messages)
@@ -103,15 +109,17 @@ class ResumeParser:
                 start_date = self._parse_date(exp_data.get("start_date"))
                 end_date = self._parse_date(exp_data.get("end_date"))
 
-                work_experience.append(WorkExperience(
-                    company=exp_data.get("company", "Unknown"),
-                    position=exp_data.get("position", "Unknown"),
-                    start_date=start_date,
-                    end_date=end_date,
-                    description=exp_data.get("description"),
-                    responsibilities=exp_data.get("responsibilities", []),
-                    technologies=exp_data.get("technologies", [])
-                ))
+                work_experience.append(
+                    WorkExperience(
+                        company=exp_data.get("company", "Unknown"),
+                        position=exp_data.get("position", "Unknown"),
+                        start_date=start_date,
+                        end_date=end_date,
+                        description=exp_data.get("description"),
+                        responsibilities=exp_data.get("responsibilities", []),
+                        technologies=exp_data.get("technologies", []),
+                    )
+                )
             except Exception as e:
                 print(f"    Warning: Could not parse work experience entry: {e}")
                 continue
@@ -120,15 +128,17 @@ class ResumeParser:
         education = []
         for edu_data in candidate_data.get("education", []):
             try:
-                education.append(Education(
-                    institution=edu_data.get("institution", "Unknown"),
-                    degree=edu_data.get("degree", "Unknown"),
-                    field_of_study=edu_data.get("field_of_study", "Unknown"),
-                    start_year=edu_data.get("start_year"),
-                    end_year=edu_data.get("end_year"),
-                    grade=edu_data.get("grade"),
-                    relevant_coursework=edu_data.get("relevant_coursework", [])
-                ))
+                education.append(
+                    Education(
+                        institution=edu_data.get("institution", "Unknown"),
+                        degree=edu_data.get("degree", "Unknown"),
+                        field_of_study=edu_data.get("field_of_study", "Unknown"),
+                        start_year=edu_data.get("start_year"),
+                        end_year=edu_data.get("end_year"),
+                        grade=edu_data.get("grade"),
+                        relevant_coursework=edu_data.get("relevant_coursework", []),
+                    )
+                )
             except Exception as e:
                 print(f"    Warning: Could not parse education entry: {e}")
                 continue
@@ -137,22 +147,23 @@ class ResumeParser:
         projects = []
         for proj_data in candidate_data.get("projects", []):
             try:
-                projects.append(Project(
-                    name=proj_data.get("name", "Unnamed Project"),
-                    description=proj_data.get("description", ""),
-                    technologies=proj_data.get("technologies", []),
-                    role=proj_data.get("role"),
-                    url=proj_data.get("url"),
-                    github_url=proj_data.get("github_url")
-                ))
+                projects.append(
+                    Project(
+                        name=proj_data.get("name", "Unnamed Project"),
+                        description=proj_data.get("description", ""),
+                        technologies=proj_data.get("technologies", []),
+                        role=proj_data.get("role"),
+                        url=proj_data.get("url"),
+                        github_url=proj_data.get("github_url"),
+                    )
+                )
             except Exception as e:
                 print(f"    Warning: Could not parse project entry: {e}")
                 continue
 
         # Calculate total experience
         total_months = sum(
-            exp.duration_months for exp in work_experience
-            if exp.duration_months
+            exp.duration_months for exp in work_experience if exp.duration_months
         )
 
         # Create Candidate object
@@ -173,7 +184,7 @@ class ResumeParser:
             education=education,
             projects=projects,
             certifications=[],  # Can be added later
-            resume_file_name=filename
+            resume_file_name=filename,
         )
 
     def _parse_date(self, date_str) -> date:
@@ -199,10 +210,7 @@ class ResumeParser:
 
     def _create_empty_candidate(self, filename: str) -> Candidate:
         """Create an empty candidate when parsing fails"""
-        return Candidate(
-            name=f"Unknown ({filename})",
-            resume_file_name=filename
-        )
+        return Candidate(name=f"Unknown ({filename})", resume_file_name=filename)
 
 
 def resume_parser_node(state: dict) -> dict:
@@ -218,7 +226,9 @@ def resume_parser_node(state: dict) -> dict:
     candidates = []
 
     resumes = state.get("resumes", [])
-    filenames = state.get("resume_filenames", [f"resume_{i}.pdf" for i in range(len(resumes))])
+    filenames = state.get(
+        "resume_filenames", [f"resume_{i}.pdf" for i in range(len(resumes))]
+    )
 
     for resume_bytes, filename in zip(resumes, filenames):
         try:
@@ -232,10 +242,7 @@ def resume_parser_node(state: dict) -> dict:
 
     print(f"Parsed {len(candidates)} resumes")
 
-    return {
-        "candidates": candidates,
-        "current_step": "resume_parsing_complete"
-    }
+    return {"candidates": candidates, "current_step": "resume_parsing_complete"}
 
 
 # Test independently
@@ -253,4 +260,6 @@ if __name__ == "__main__":
     print(f"Email: {candidate.email}")
     print(f"Skills: {candidate.technical_skills[:10]}")
     print(f"Experience: {candidate.total_experience_years} years")
-    print(f"Education: {candidate.highest_education.degree if candidate.highest_education else 'N/A'}")
+    print(
+        f"Education: {candidate.highest_education.degree if candidate.highest_education else 'N/A'}"
+    )

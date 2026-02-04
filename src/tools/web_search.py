@@ -52,7 +52,7 @@ class WebSearchTool:
                     "description": "No information found",
                     "tech_stack": [],
                     "industry": "Unknown",
-                    "sources": []
+                    "sources": [],
                 }
 
             # Extract information
@@ -62,10 +62,27 @@ class WebSearchTool:
 
             # Try to identify tech stack (simple heuristic)
             tech_keywords = [
-                "Python", "Java", "JavaScript", "React", "Angular", "Vue",
-                "AWS", "Azure", "GCP", "Docker", "Kubernetes",
-                "TensorFlow", "PyTorch", "Machine Learning", "AI",
-                "Node.js", "Django", "Flask", "Spring", "MongoDB", "PostgreSQL"
+                "Python",
+                "Java",
+                "JavaScript",
+                "React",
+                "Angular",
+                "Vue",
+                "AWS",
+                "Azure",
+                "GCP",
+                "Docker",
+                "Kubernetes",
+                "TensorFlow",
+                "PyTorch",
+                "Machine Learning",
+                "AI",
+                "Node.js",
+                "Django",
+                "Flask",
+                "Spring",
+                "MongoDB",
+                "PostgreSQL",
             ]
 
             tech_stack = []
@@ -83,7 +100,7 @@ class WebSearchTool:
                 "description": description[:300],  # First 300 chars
                 "tech_stack": list(set(tech_stack)),  # Remove duplicates
                 "industry": industry,
-                "sources": sources
+                "sources": sources,
             }
 
             # Cache result
@@ -99,7 +116,7 @@ class WebSearchTool:
                 "description": f"Search error: {str(e)}",
                 "tech_stack": [],
                 "industry": "Unknown",
-                "sources": []
+                "sources": [],
             }
 
     def search_technology(self, technology: str) -> dict:
@@ -121,7 +138,7 @@ class WebSearchTool:
                     "name": technology,
                     "description": results[0].get("body", ""),
                     "category": self._categorize_technology(technology),
-                    "related_skills": []
+                    "related_skills": [],
                 }
                 self.cache[cache_key] = result
                 return result
@@ -133,7 +150,7 @@ class WebSearchTool:
             "name": technology,
             "description": "No information available",
             "category": "Unknown",
-            "related_skills": []
+            "related_skills": [],
         }
 
     def _identify_industry(self, text: str) -> str:
@@ -157,12 +174,19 @@ class WebSearchTool:
     def _categorize_technology(self, tech: str) -> str:
         """Categorize a technology"""
         categories = {
-            "programming_language": ["python", "java", "javascript", "c++", "go", "rust"],
+            "programming_language": [
+                "python",
+                "java",
+                "javascript",
+                "c++",
+                "go",
+                "rust",
+            ],
             "ml_framework": ["tensorflow", "pytorch", "keras", "scikit-learn"],
             "web_framework": ["react", "angular", "vue", "django", "flask"],
             "cloud": ["aws", "azure", "gcp", "cloud"],
             "database": ["sql", "mongodb", "postgresql", "mysql", "redis"],
-            "devops": ["docker", "kubernetes", "jenkins", "ci/cd"]
+            "devops": ["docker", "kubernetes", "jenkins", "ci/cd"],
         }
 
         tech_lower = tech.lower()

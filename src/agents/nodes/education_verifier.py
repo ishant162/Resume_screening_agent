@@ -1,4 +1,3 @@
-
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import EDUCATION_VERIFICATION_PROMPT
@@ -13,9 +12,7 @@ class EducationVerifier:
         self.llm = GroqLLM().get_llm_model()
 
     def verify_education(
-        self,
-        candidate: Candidate,
-        job_requirements: JobRequirements
+        self, candidate: Candidate, job_requirements: JobRequirements
     ) -> EducationScore:
         """
         Verify candidate's education against requirements
@@ -39,15 +36,11 @@ class EducationVerifier:
         highest_degree = candidate.highest_education
 
         # Perform LLM-based verification
-        verification_result = self._llm_verify_education(
-            candidate,
-            job_requirements
-        )
+        verification_result = self._llm_verify_education(candidate, job_requirements)
 
         # Calculate education score
         education_score = self._calculate_education_score(
-            verification_result,
-            job_requirements.education.required
+            verification_result, job_requirements.education.required
         )
 
         return EducationScore(
@@ -59,13 +52,13 @@ class EducationVerifier:
             relevant_coursework=verification_result.get("relevant_coursework", []),
             certifications=[cert.name for cert in candidate.certifications],
             education_score=round(education_score, 1),
-            education_analysis=verification_result.get("analysis", "No analysis available")
+            education_analysis=verification_result.get(
+                "analysis", "No analysis available"
+            ),
         )
 
     def _llm_verify_education(
-        self,
-        candidate: Candidate,
-        job_requirements: JobRequirements
+        self, candidate: Candidate, job_requirements: JobRequirements
     ) -> dict:
         """
         Use LLM to intelligently verify education requirements
@@ -81,16 +74,22 @@ class EducationVerifier:
         education_summary = self._format_education(candidate.education)
 
         # Format certifications
-        cert_summary = ", ".join([cert.name for cert in candidate.certifications]) if candidate.certifications else "None"
+        cert_summary = (
+            ", ".join([cert.name for cert in candidate.certifications])
+            if candidate.certifications
+            else "None"
+        )
 
         prompt = EDUCATION_VERIFICATION_PROMPT.format(
             minimum_degree=job_requirements.education.minimum_degree,
-            preferred_degree=job_requirements.education.preferred_degree or "Not specified",
+            preferred_degree=job_requirements.education.preferred_degree
+            or "Not specified",
             fields_of_study=", ".join(job_requirements.education.fields_of_study)
-                if job_requirements.education.fields_of_study else "Not specified",
+            if job_requirements.education.fields_of_study
+            else "Not specified",
             degree_required="Yes"
-                if job_requirements.education.required
-                else "No (preferred but not required)",
+            if job_requirements.education.required
+            else "No (preferred but not required)",
             candidate_name=candidate.name,
             total_experience_years=candidate.total_experience_years,
             education_summary=education_summary,
@@ -99,13 +98,16 @@ class EducationVerifier:
 
         try:
             messages = [
-                SystemMessage(content="You are an expert at fairly assessing educational qualifications with global and non-traditional education awareness."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are an expert at fairly assessing educational qualifications with global and non-traditional education awareness."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
             # Parse JSON
             import json
+
             response_text = response.content.strip()
             if "```json" in response_text:
                 response_text = response_text.split("```json")[1].split("```")[0]
@@ -121,9 +123,7 @@ class EducationVerifier:
             return self._simple_verification(candidate, job_requirements)
 
     def _simple_verification(
-        self,
-        candidate: Candidate,
-        job_requirements: JobRequirements
+        self, candidate: Candidate, job_requirements: JobRequirements
     ) -> dict:
         """Fallback simple verification"""
 
@@ -135,9 +135,15 @@ class EducationVerifier:
             degree_lower = highest.degree.lower()
             # Simple matching
             if "master" in required or "mtech" in required or "msc" in required:
-                meets_requirement = any(x in degree_lower for x in ["master", "mtech", "msc", "phd", "doctorate"])
+                meets_requirement = any(
+                    x in degree_lower
+                    for x in ["master", "mtech", "msc", "phd", "doctorate"]
+                )
             elif "bachelor" in required or "btech" in required or "bsc" in required:
-                meets_requirement = any(x in degree_lower for x in ["bachelor", "btech", "bsc", "master", "phd"])
+                meets_requirement = any(
+                    x in degree_lower
+                    for x in ["bachelor", "btech", "bsc", "master", "phd"]
+                )
 
         return {
             "meets_requirement": meets_requirement,
@@ -145,13 +151,11 @@ class EducationVerifier:
             "degree_level_match": "unknown",
             "relevant_coursework": [],
             "compensating_factors": [],
-            "analysis": f"Basic verification: {'Meets' if meets_requirement else 'Does not meet'} minimum degree requirement."
+            "analysis": f"Basic verification: {'Meets' if meets_requirement else 'Does not meet'} minimum degree requirement.",
         }
 
     def _calculate_education_score(
-        self,
-        verification_result: dict,
-        education_required: bool
+        self, verification_result: dict, education_required: bool
     ) -> float:
         """
         Calculate education score (0-100)
@@ -201,7 +205,9 @@ class EducationVerifier:
             if edu.grade:
                 summary.append(f"   Grade: {edu.grade}")
             if edu.relevant_coursework:
-                summary.append(f"   Relevant Coursework: {', '.join(edu.relevant_coursework[:5])}")
+                summary.append(
+                    f"   Relevant Coursework: {', '.join(edu.relevant_coursework[:5])}"
+                )
             summary.append("")
 
         return "\n".join(summary)
@@ -227,15 +233,17 @@ def education_verifier_node(state: dict) -> dict:
         education_scores.append(education_score.model_dump())
 
         meets = "✅" if education_score.meets_requirement else "⚠️"
-        print(f"  {meets} {candidate.name}: {education_score.education_score:.1f}% "
-              f"({education_score.highest_degree or 'No degree'}, "
-              f"field match: {education_score.field_match})")
+        print(
+            f"  {meets} {candidate.name}: {education_score.education_score:.1f}% "
+            f"({education_score.highest_degree or 'No degree'}, "
+            f"field match: {education_score.field_match})"
+        )
 
     print(f"Education verification complete for {len(education_scores)} candidates\n")
 
     return {
         "education_scores": education_scores,
-        "current_step": "education_verification_complete"
+        "current_step": "education_verification_complete",
     }
 
 
@@ -257,9 +265,14 @@ if __name__ == "__main__":
         education=EducationRequirement(
             minimum_degree="Bachelor",
             preferred_degree="Master",
-            fields_of_study=["Computer Science", "AI", "Machine Learning", "Related Field"],
-            required=True
-        )
+            fields_of_study=[
+                "Computer Science",
+                "AI",
+                "Machine Learning",
+                "Related Field",
+            ],
+            required=True,
+        ),
     )
 
     # Mock candidate with BTech (Indian degree)
@@ -276,27 +289,31 @@ if __name__ == "__main__":
                 start_year=2014,
                 end_year=2018,
                 grade="8.5 CGPA",
-                relevant_coursework=["Machine Learning", "Deep Learning", "Data Structures", "Algorithms"]
+                relevant_coursework=[
+                    "Machine Learning",
+                    "Deep Learning",
+                    "Data Structures",
+                    "Algorithms",
+                ],
             )
         ],
         certifications=[
             Certification(
-                name="TensorFlow Developer Certificate",
-                issuing_organization="Google"
+                name="TensorFlow Developer Certificate", issuing_organization="Google"
             ),
             Certification(
                 name="Deep Learning Specialization",
-                issuing_organization="Coursera/DeepLearning.AI"
-            )
-        ]
+                issuing_organization="Coursera/DeepLearning.AI",
+            ),
+        ],
     )
 
     verifier = EducationVerifier()
     score = verifier.verify_education(candidate, job)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("EDUCATION VERIFICATION RESULT")
-    print("="*80)
+    print("=" * 80)
     print(f"\nCandidate: {candidate.name}")
     print(f"Education Score: {score.education_score}%")
     print(f"Highest Degree: {score.highest_degree}")
@@ -304,8 +321,8 @@ if __name__ == "__main__":
     print(f"Meets Requirement: {score.meets_requirement}")
     print(f"Field Match: {score.field_match}")
     print(f"Certifications: {score.certifications}")
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("ANALYSIS:")
-    print("="*80)
+    print("=" * 80)
     print(f"\n{score.education_analysis}")
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)

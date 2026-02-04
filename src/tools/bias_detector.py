@@ -31,25 +31,40 @@ class BiasDetector:
         # Bias indicators
         self.name_patterns = {
             "gender_indicators": [
-                "strong", "aggressive", "ambitious",  # Often associated with male
-                "supportive", "collaborative", "nurturing"  # Often associated with female
+                "strong",
+                "aggressive",
+                "ambitious",  # Often associated with male
+                "supportive",
+                "collaborative",
+                "nurturing",  # Often associated with female
             ],
             "age_indicators": [
-                "digital native", "recent graduate", "energetic",
-                "experienced", "seasoned", "mature"
-            ]
+                "digital native",
+                "recent graduate",
+                "energetic",
+                "experienced",
+                "seasoned",
+                "mature",
+            ],
         }
 
         self.elite_universities = [
-            "harvard", "stanford", "mit", "yale", "princeton",
-            "oxford", "cambridge", "berkeley", "caltech"
+            "harvard",
+            "stanford",
+            "mit",
+            "yale",
+            "princeton",
+            "oxford",
+            "cambridge",
+            "berkeley",
+            "caltech",
         ]
 
     def analyze_bias(
         self,
         candidates: list[dict],
         ranked_candidates: list[dict],
-        job_requirements: dict
+        job_requirements: dict,
     ) -> dict:
         """
         Analyze potential biases in screening results
@@ -77,7 +92,9 @@ class BiasDetector:
             detected_biases.append(university_bias)
 
         # 2. Experience requirements bias
-        experience_bias = self._check_experience_bias(candidates, ranked_candidates, job_requirements)
+        experience_bias = self._check_experience_bias(
+            candidates, ranked_candidates, job_requirements
+        )
         if experience_bias["detected"]:
             detected_biases.append(experience_bias)
 
@@ -92,7 +109,9 @@ class BiasDetector:
             detected_biases.append(scoring_bias)
 
         # 5. LLM-based bias detection (comprehensive)
-        llm_bias = self._llm_bias_analysis(candidates, ranked_candidates, job_requirements)
+        llm_bias = self._llm_bias_analysis(
+            candidates, ranked_candidates, job_requirements
+        )
         if llm_bias.get("detected_biases"):
             detected_biases.extend(llm_bias["detected_biases"])
 
@@ -116,13 +135,11 @@ class BiasDetector:
             "bias_score": round(bias_score, 1),
             "detected_biases": detected_biases,
             "fairness_assessment": fairness,
-            "recommendations": recommendations
+            "recommendations": recommendations,
         }
 
     def _check_university_bias(
-        self,
-        candidates: list[dict],
-        ranked_candidates: list[dict]
+        self, candidates: list[dict], ranked_candidates: list[dict]
     ) -> dict:
         """Check if top candidates are disproportionately from elite universities"""
 
@@ -149,8 +166,16 @@ class BiasDetector:
                             top_universities.append(edu.get("institution", "").lower())
 
         # Check for elite university concentration
-        elite_in_all = sum(1 for uni in all_universities if any(elite in uni for elite in self.elite_universities))
-        elite_in_top = sum(1 for uni in top_universities if any(elite in uni for elite in self.elite_universities))
+        elite_in_all = sum(
+            1
+            for uni in all_universities
+            if any(elite in uni for elite in self.elite_universities)
+        )
+        elite_in_top = sum(
+            1
+            for uni in top_universities
+            if any(elite in uni for elite in self.elite_universities)
+        )
 
         if len(top_universities) > 0:
             top_elite_ratio = elite_in_top / len(top_universities)
@@ -169,15 +194,19 @@ class BiasDetector:
             "type": "University Prestige Bias",
             "detected": detected,
             "severity": "Medium" if detected else "None",
-            "description": f"Top candidates include {elite_in_top}/{len(top_universities)} from elite universities vs {elite_in_all}/{len(all_universities)} overall" if detected else "",
-            "recommendation": "Consider candidates from diverse educational backgrounds" if detected else ""
+            "description": f"Top candidates include {elite_in_top}/{len(top_universities)} from elite universities vs {elite_in_all}/{len(all_universities)} overall"
+            if detected
+            else "",
+            "recommendation": "Consider candidates from diverse educational backgrounds"
+            if detected
+            else "",
         }
 
     def _check_experience_bias(
         self,
         candidates: list[dict],
         ranked_candidates: list[dict],
-        job_requirements: dict
+        job_requirements: dict,
     ) -> dict:
         """Check if experience requirements are overly strict"""
 
@@ -195,19 +224,28 @@ class BiasDetector:
                     top_3_candidates.append(candidate)
 
         under_requirement = [
-            c for c in top_3_candidates
+            c
+            for c in top_3_candidates
             if c.get("total_experience_months", 0) / 12 < required_years
         ]
 
         # If requiring senior experience but excluding good junior candidates
-        detected = required_years >= 7 and len(under_requirement) == 0 and len(candidates) > len(ranked_candidates)
+        detected = (
+            required_years >= 7
+            and len(under_requirement) == 0
+            and len(candidates) > len(ranked_candidates)
+        )
 
         return {
             "type": "Experience Requirements Bias",
             "detected": detected,
             "severity": "Low" if detected else "None",
-            "description": f"Strict {required_years}+ years requirement may exclude qualified candidates" if detected else "",
-            "recommendation": "Consider candidates slightly below experience threshold if skills are strong" if detected else ""
+            "description": f"Strict {required_years}+ years requirement may exclude qualified candidates"
+            if detected
+            else "",
+            "recommendation": "Consider candidates slightly below experience threshold if skills are strong"
+            if detected
+            else "",
         }
 
     def _check_language_bias(self, job_requirements: dict) -> dict:
@@ -236,8 +274,12 @@ class BiasDetector:
             "type": "Job Description Language Bias",
             "detected": detected,
             "severity": "Medium" if detected else "None",
-            "description": f"Job description contains {', '.join(bias_type)}" if detected else "",
-            "recommendation": "Use gender-neutral and age-neutral language in job postings" if detected else ""
+            "description": f"Job description contains {', '.join(bias_type)}"
+            if detected
+            else "",
+            "recommendation": "Use gender-neutral and age-neutral language in job postings"
+            if detected
+            else "",
         }
 
     def _check_scoring_consistency(self, ranked_candidates: list[dict]) -> dict:
@@ -254,7 +296,7 @@ class BiasDetector:
 
         # Check for suspiciously large gaps
         if len(scores) >= 2:
-            max_gap = max(scores[i] - scores[i+1] for i in range(len(scores)-1))
+            max_gap = max(scores[i] - scores[i + 1] for i in range(len(scores) - 1))
 
             # Flag if there's a >30 point gap between adjacent candidates
             detected = max_gap > 30
@@ -263,8 +305,12 @@ class BiasDetector:
                 "type": "Scoring Consistency",
                 "detected": detected,
                 "severity": "Low" if detected else "None",
-                "description": f"Large scoring gap ({max_gap:.1f} points) between candidates" if detected else "",
-                "recommendation": "Review scoring criteria for consistency" if detected else ""
+                "description": f"Large scoring gap ({max_gap:.1f} points) between candidates"
+                if detected
+                else "",
+                "recommendation": "Review scoring criteria for consistency"
+                if detected
+                else "",
             }
 
         return {"detected": False}
@@ -273,7 +319,7 @@ class BiasDetector:
         self,
         candidates: list[dict],
         ranked_candidates: list[dict],
-        job_requirements: dict
+        job_requirements: dict,
     ) -> dict:
         """Use LLM to detect subtle biases"""
 
@@ -288,9 +334,13 @@ class BiasDetector:
             # Find candidate details
             candidate = next((c for c in candidates if c.get("name") == name), {})
             education = candidate.get("education", [])
-            edu_str = education[0].get("institution", "Unknown") if education else "Unknown"
+            edu_str = (
+                education[0].get("institution", "Unknown") if education else "Unknown"
+            )
 
-            top_3_summary.append(f"#{ranked.get('rank')}: {name} - Score: {score:.1f}, Rec: {rec}, Education: {edu_str}")
+            top_3_summary.append(
+                f"#{ranked.get('rank')}: {name} - Score: {score:.1f}, Rec: {rec}, Education: {edu_str}"
+            )
 
         prompt = HIRING_BIAS_ANALYSIS_PROMPT.format(
             job_title=job_requirements.get("job_title", "Unknown"),
@@ -300,8 +350,10 @@ class BiasDetector:
 
         try:
             messages = [
-                SystemMessage(content="You are an expert in detecting unconscious bias in hiring."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are an expert in detecting unconscious bias in hiring."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
@@ -323,11 +375,7 @@ class BiasDetector:
         if not detected_biases:
             return 0.0
 
-        severity_scores = {
-            "Low": 15,
-            "Medium": 30,
-            "High": 50
-        }
+        severity_scores = {"Low": 15, "Medium": 30, "High": 50}
 
         total = sum(
             severity_scores.get(bias.get("severity", "Low"), 15)
@@ -347,10 +395,16 @@ class BiasDetector:
 
         # Always add general recommendation
         if detected_biases:
-            recommendations.append("Review screening criteria to ensure fairness and objectivity")
-            recommendations.append("Consider blind screening (removing names/universities) for initial review")
+            recommendations.append(
+                "Review screening criteria to ensure fairness and objectivity"
+            )
+            recommendations.append(
+                "Consider blind screening (removing names/universities) for initial review"
+            )
         else:
-            recommendations.append("Continue current screening practices - no significant biases detected")
+            recommendations.append(
+                "Continue current screening practices - no significant biases detected"
+            )
 
         return list(set(recommendations))  # Remove duplicates
 
@@ -364,18 +418,18 @@ if __name__ == "__main__":
         {
             "name": "Alice Johnson",
             "total_experience_months": 72,
-            "education": [{"institution": "MIT", "degree": "BS"}]
+            "education": [{"institution": "MIT", "degree": "BS"}],
         },
         {
             "name": "Bob Smith",
             "total_experience_months": 48,
-            "education": [{"institution": "State University", "degree": "BS"}]
+            "education": [{"institution": "State University", "degree": "BS"}],
         },
         {
             "name": "Carol Williams",
             "total_experience_months": 60,
-            "education": [{"institution": "Harvard", "degree": "MS"}]
-        }
+            "education": [{"institution": "Harvard", "degree": "MS"}],
+        },
     ]
 
     ranked = [
@@ -384,50 +438,50 @@ if __name__ == "__main__":
             "candidate_score": {
                 "candidate_name": "Alice Johnson",
                 "total_score": 92.0,
-                "recommendation": "Strong Match"
-            }
+                "recommendation": "Strong Match",
+            },
         },
         {
             "rank": 2,
             "candidate_score": {
                 "candidate_name": "Carol Williams",
                 "total_score": 88.0,
-                "recommendation": "Strong Match"
-            }
+                "recommendation": "Strong Match",
+            },
         },
         {
             "rank": 3,
             "candidate_score": {
                 "candidate_name": "Bob Smith",
                 "total_score": 75.0,
-                "recommendation": "Good Match"
-            }
-        }
+                "recommendation": "Good Match",
+            },
+        },
     ]
 
     job = {
         "job_title": "Senior Engineer",
         "job_description": "Looking for aggressive, competitive engineer",
-        "experience": {"minimum_years": 5}
+        "experience": {"minimum_years": 5},
     }
 
     result = detector.analyze_bias(candidates, ranked, job)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("⚖️  BIAS ANALYSIS")
-    print("="*80)
+    print("=" * 80)
     print(f"\nBias Score: {result['bias_score']:.1f}/100 (lower is better)")
     print(f"Fairness Assessment: {result['fairness_assessment']}")
 
-    if result['detected_biases']:
+    if result["detected_biases"]:
         print("\n🚩 Detected Biases:")
-        for bias in result['detected_biases']:
+        for bias in result["detected_biases"]:
             print(f"\n  Type: {bias['type']}")
             print(f"  Severity: {bias['severity']}")
             print(f"  Description: {bias['description']}")
 
     print("\n💡 Recommendations:")
-    for rec in result['recommendations']:
+    for rec in result["recommendations"]:
         print(f"  • {rec}")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)

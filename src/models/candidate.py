@@ -14,6 +14,7 @@ class EmploymentType(str, Enum):
 
 class WorkExperience(BaseModel):
     """Individual work experience entry"""
+
     company: str
     position: str
     employment_type: EmploymentType | None = EmploymentType.FULL_TIME
@@ -30,13 +31,13 @@ class WorkExperience(BaseModel):
     def is_current(self) -> bool:
         return self.end_date is None
 
-    @field_validator('duration_months', mode='before')
+    @field_validator("duration_months", mode="before")
     @classmethod
     def calculate_duration(cls, v, info):
         """Auto-calculate duration if dates provided"""
-        if v is None and 'start_date' in info.data and info.data['start_date']:
-            start = info.data['start_date']
-            end = info.data.get('end_date') or date.today()
+        if v is None and "start_date" in info.data and info.data["start_date"]:
+            start = info.data["start_date"]
+            end = info.data.get("end_date") or date.today()
             months = (end.year - start.year) * 12 + (end.month - start.month)
             return max(0, months)
         return v
@@ -44,6 +45,7 @@ class WorkExperience(BaseModel):
 
 class Education(BaseModel):
     """Education details"""
+
     institution: str
     degree: str  # e.g., "Bachelor of Technology", "Master of Science"
     field_of_study: str  # e.g., "Computer Science", "Data Science"
@@ -61,6 +63,7 @@ class Education(BaseModel):
 
 class Project(BaseModel):
     """Personal or professional project"""
+
     name: str
     description: str
     technologies: list[str] = Field(default_factory=list)
@@ -75,6 +78,7 @@ class Project(BaseModel):
 
 class Certification(BaseModel):
     """Professional certifications"""
+
     name: str
     issuing_organization: str
     issue_date: date | None = None
@@ -139,21 +143,28 @@ class Candidate(BaseModel):
     def all_skills(self) -> list[str]:
         """Get all skills combined"""
         return (
-            self.technical_skills +
-            self.soft_skills +
-            self.languages +
-            self.tools_and_technologies
+            self.technical_skills
+            + self.soft_skills
+            + self.languages
+            + self.tools_and_technologies
         )
 
     @property
     def highest_education(self) -> Education | None:
         """Get highest education level"""
         degree_hierarchy = {
-            "phd": 5, "doctorate": 5,
-            "master": 4, "msc": 4, "mtech": 4, "mba": 4,
-            "bachelor": 3, "bsc": 3, "btech": 3, "be": 3,
+            "phd": 5,
+            "doctorate": 5,
+            "master": 4,
+            "msc": 4,
+            "mtech": 4,
+            "mba": 4,
+            "bachelor": 3,
+            "bsc": 3,
+            "btech": 3,
+            "be": 3,
             "diploma": 2,
-            "high school": 1
+            "high school": 1,
         }
 
         if not self.education:
@@ -175,12 +186,10 @@ class Candidate(BaseModel):
             "email": self.email,
             "total_experience": f"{self.total_experience_years} years",
             "education": (
-                self.highest_education.degree
-                if self.highest_education else "N/A"
-                ),
+                self.highest_education.degree if self.highest_education else "N/A"
+            ),
             "key_skills": self.technical_skills[:5],
             "current_role": (
-                    self.work_experience[0].position
-                    if self.work_experience else "N/A"
-                )
+                self.work_experience[0].position if self.work_experience else "N/A"
+            ),
         }

@@ -19,7 +19,7 @@ from src.agents.graph.graph_builder import create_screening_graph
 
 def load_job_description(job_path: str) -> str:
     """Load job description from file"""
-    with open(job_path, encoding='utf-8') as f:
+    with open(job_path, encoding="utf-8") as f:
         return f.read()
 
 
@@ -39,7 +39,7 @@ def load_resumes(resume_paths: list) -> tuple:
             print(f"⚠️  Warning: {path} not found, skipping...")
             continue
 
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             resumes.append(f.read())
             filenames.append(path_obj.name)
 
@@ -55,7 +55,7 @@ def save_report(report: str, output_dir: str) -> Path:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     report_file = output_path / f"screening_report_{timestamp}.md"
 
-    with open(report_file, 'w', encoding='utf-8') as f:
+    with open(report_file, "w", encoding="utf-8") as f:
         f.write(report)
 
     return report_file
@@ -69,7 +69,7 @@ def save_questions(questions: dict, output_dir: str) -> Path:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     questions_file = output_path / f"interview_questions_{timestamp}.md"
 
-    with open(questions_file, 'w', encoding='utf-8') as f:
+    with open(questions_file, "w", encoding="utf-8") as f:
         f.write("# Interview Questions\n\n")
 
         for candidate_name, question_list in questions.items():
@@ -83,9 +83,9 @@ def save_questions(questions: dict, output_dir: str) -> Path:
 
 def print_summary(result: dict):
     """Print execution summary"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("EXECUTION SUMMARY")
-    print("="*80)
+    print("=" * 80)
 
     # Job info
     job_req = result.get("job_requirements", {})
@@ -115,12 +115,12 @@ def print_summary(result: dict):
         rec = cs.get("recommendation", "N/A")
         print(f"   #{rank} {name}: {score:.1f}% ({rec})")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Resume Screening AI Agent',
+        description="Resume Screening AI Agent",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
             Examples:
@@ -134,32 +134,25 @@ def main():
                 --job job.txt \\
                 --resumes resume1.pdf resume2.pdf resume3.pdf \\
                 --output ./results
-        """
+        """,
     )
 
     parser.add_argument(
-        '--job',
-        required=True,
-        help='Path to job description file (.txt)'
+        "--job", required=True, help="Path to job description file (.txt)"
     )
 
     parser.add_argument(
-        '--resumes',
-        nargs='+',
-        required=True,
-        help='Paths to resume PDF files'
+        "--resumes", nargs="+", required=True, help="Paths to resume PDF files"
     )
 
     parser.add_argument(
-        '--output',
-        default='data/outputs',
-        help='Output directory for reports (default: data/outputs)'
+        "--output",
+        default="data/outputs",
+        help="Output directory for reports (default: data/outputs)",
     )
 
     parser.add_argument(
-        '--verbose',
-        action='store_true',
-        help='Show detailed execution logs'
+        "--verbose", action="store_true", help="Show detailed execution logs"
     )
 
     args = parser.parse_args()
@@ -169,17 +162,17 @@ def main():
         print(f"❌ Error: Job description file not found: {args.job}")
         sys.exit(1)
 
-    print("="*80)
+    print("=" * 80)
     print("RESUME SCREENING AGENT")
-    print("="*80)
+    print("=" * 80)
     print(f"\n📋 Job Description: {args.job}")
     print(f"📄 Resumes to screen: {len(args.resumes)}")
     for resume in args.resumes:
         print(f"   - {resume}")
     print(f"💾 Output directory: {args.output}")
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("STARTING WORKFLOW...")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     try:
         # Load data
@@ -199,7 +192,7 @@ def main():
             "resumes": resumes,
             "resume_filenames": filenames,
             "candidates": [],
-            "errors": []
+            "errors": [],
         }
 
         # Create and run the graph
@@ -244,6 +237,7 @@ def main():
         print(f"\n❌ Error during execution: {e}")
         if args.verbose:
             import traceback
+
             traceback.print_exc()
         sys.exit(1)
 

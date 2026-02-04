@@ -4,7 +4,6 @@ ATS Scorer Node
 Wraps the ATSScorer tool in a LangGraph node.
 """
 
-
 from src.tools import ATSScorer
 from src.tools.pdf_extractor import PDFExtractor
 
@@ -16,9 +15,9 @@ def ats_scorer_node(state: dict) -> dict:
     Helps candidates understand how their resumes will perform
     in Applicant Tracking Systems.
     """
-    print("="*80)
+    print("=" * 80)
     print("ATS SCORER - RESUME OPTIMIZATION ANALYSIS")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     scorer = ATSScorer()
     pdf_extractor = PDFExtractor()
@@ -28,8 +27,7 @@ def ats_scorer_node(state: dict) -> dict:
     # Get resume texts
     resume_texts = {}
     for resume_bytes, filename in zip(
-        state.get("resumes", []),
-        state.get("resume_filenames", [])
+        state.get("resumes", []), state.get("resume_filenames", [])
     ):
         text = pdf_extractor.extract_text(resume_bytes)
         resume_texts[filename] = text
@@ -46,22 +44,19 @@ def ats_scorer_node(state: dict) -> dict:
 
         # Score
         score_result = scorer.score_resume(
-            resume_text,
-            candidate_data,
-            state["job_requirements"]
+            resume_text, candidate_data, state["job_requirements"]
         )
 
         ats_scores[candidate_name] = score_result
 
-        print(f" ATS Score: {score_result['overall_score']:.1f}/100 "
-              f"({score_result['ats_readiness']})")
+        print(
+            f" ATS Score: {score_result['overall_score']:.1f}/100 "
+            f"({score_result['ats_readiness']})"
+        )
 
     print(f"\nATS scoring complete for {len(ats_scores)} candidates\n")
 
-    return {
-        "ats_scores": ats_scores,
-        "current_step": "ats_scoring_complete"
-    }
+    return {"ats_scores": ats_scores, "current_step": "ats_scoring_complete"}
 
 
 # Test
@@ -79,17 +74,14 @@ if __name__ == "__main__":
                 "work_experience": [
                     {"company": "Tech Corp", "responsibilities": ["Built systems"]}
                 ],
-                "resume_file_name": "alice.pdf"
+                "resume_file_name": "alice.pdf",
             }
         ],
         "resumes": [b"mock pdf data"],
         "resume_filenames": ["alice.pdf"],
         "job_requirements": {
-            "technical_skills": [
-                {"name": "Python"},
-                {"name": "TensorFlow"}
-            ]
-        }
+            "technical_skills": [{"name": "Python"}, {"name": "TensorFlow"}]
+        },
     }
 
     result = ats_scorer_node(state)

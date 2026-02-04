@@ -23,7 +23,7 @@ class EnhancedExperienceAnalyzer:
         self,
         candidate: Candidate,
         job_requirements: JobRequirements,
-        company_verifications: dict = None
+        company_verifications: dict = None,
     ) -> ExperienceScore:
         """
         Analyze experience with company context
@@ -43,16 +43,12 @@ class EnhancedExperienceAnalyzer:
 
         # Analyze with company context
         analysis = self._analyze_with_company_context(
-            candidate,
-            job_requirements,
-            company_verifications or {}
+            candidate, job_requirements, company_verifications or {}
         )
 
         # Calculate enhanced score
         experience_match_score = self._calculate_enhanced_score(
-            total_years,
-            required_years,
-            analysis
+            total_years, required_years, analysis
         )
 
         return ExperienceScore(
@@ -65,28 +61,28 @@ class EnhancedExperienceAnalyzer:
             has_role_progression=analysis.get("has_progression", False),
             career_trajectory=analysis.get("trajectory", "unknown"),
             experience_match_score=round(experience_match_score, 1),
-            experience_analysis=analysis.get("comprehensive_analysis", "")
+            experience_analysis=analysis.get("comprehensive_analysis", ""),
         )
 
     def _analyze_with_company_context(
         self,
         candidate: Candidate,
         job_requirements: JobRequirements,
-        company_verifications: dict
+        company_verifications: dict,
     ) -> dict:
         """Use LLM with company verification context"""
 
         # Format work history with company data
         work_summary = self._format_work_with_context(
-            candidate.work_experience,
-            company_verifications
+            candidate.work_experience, company_verifications
         )
 
         prompt = COMPANY_CONTEXT_EXPERIENCE_ANALYSIS_PROMPT.format(
             job_title=job_requirements.job_title,
             required_experience_years=job_requirements.experience.minimum_years or 0,
             target_domains=", ".join(job_requirements.experience.specific_domains)
-                if job_requirements.experience.specific_domains else "Not specified",
+            if job_requirements.experience.specific_domains
+            else "Not specified",
             candidate_name=candidate.name,
             total_experience_years=candidate.total_experience_years,
             work_summary=work_summary,
@@ -94,8 +90,10 @@ class EnhancedExperienceAnalyzer:
 
         try:
             messages = [
-                SystemMessage(content="You are an expert at assessing work experience with industry context."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are an expert at assessing work experience with industry context."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
@@ -115,13 +113,11 @@ class EnhancedExperienceAnalyzer:
                 "relevant_domains": [],
                 "has_progression": False,
                 "trajectory": "unknown",
-                "comprehensive_analysis": "Unable to perform enhanced analysis."
+                "comprehensive_analysis": "Unable to perform enhanced analysis.",
             }
 
     def _format_work_with_context(
-        self,
-        work_experience: list,
-        company_verifications: dict
+        self, work_experience: list, company_verifications: dict
     ) -> str:
         """Format work history with company verification data"""
 
@@ -133,7 +129,11 @@ class EnhancedExperienceAnalyzer:
         for i, exp in enumerate(work_experience[:3], 1):
             company = exp.company
             position = exp.position
-            duration = f"{exp.duration_months} months" if exp.duration_months else "Unknown duration"
+            duration = (
+                f"{exp.duration_months} months"
+                if exp.duration_months
+                else "Unknown duration"
+            )
 
             summary.append(f"{i}. {position} at {company}")
             summary.append(f"   Duration: {duration}")
@@ -143,7 +143,9 @@ class EnhancedExperienceAnalyzer:
                 company_data = company_verifications[company]
 
                 if company_data.get("exists"):
-                    summary.append(f"   Company Info: {company_data.get('description', '')[:150]}")
+                    summary.append(
+                        f"   Company Info: {company_data.get('description', '')[:150]}"
+                    )
 
                     if company_data.get("tech_stack"):
                         tech_stack = company_data["tech_stack"][:5]
@@ -157,17 +159,16 @@ class EnhancedExperienceAnalyzer:
                 summary.append("   Company Info: Not searched")
 
             if exp.responsibilities:
-                summary.append(f"   Responsibilities: {'; '.join(exp.responsibilities[:2])}")
+                summary.append(
+                    f"   Responsibilities: {'; '.join(exp.responsibilities[:2])}"
+                )
 
             summary.append("")
 
         return "\n".join(summary)
 
     def _calculate_enhanced_score(
-        self,
-        total_years: float,
-        required_years: int,
-        analysis: dict
+        self, total_years: float, required_years: int, analysis: dict
     ) -> float:
         """Calculate experience score with enhancements"""
 
@@ -198,7 +199,7 @@ class EnhancedExperienceAnalyzer:
             "lateral": 18.0,
             "pivot": 15.0,
             "early-career": 12.0,
-            "unknown": 10.0
+            "unknown": 10.0,
         }
         progression_score = progression_map.get(trajectory, 10.0)
 
@@ -234,18 +235,18 @@ def experience_analyzer_enhanced_node(state: dict) -> dict:
         candidate_company_data = company_verifications.get(candidate.name, {})
 
         experience_score = analyzer.analyze_experience(
-            candidate,
-            job_req,
-            candidate_company_data
+            candidate, job_req, candidate_company_data
         )
         experience_scores.append(experience_score.model_dump())
 
-        print(f" {candidate.name}: {experience_score.experience_match_score:.1f}% "
-              f"({experience_score.relevant_years:.1f}/{experience_score.required_years} years)")
+        print(
+            f" {candidate.name}: {experience_score.experience_match_score:.1f}% "
+            f"({experience_score.relevant_years:.1f}/{experience_score.required_years} years)"
+        )
 
     print("Enhanced experience analysis complete\n")
 
     return {
         "experience_scores": experience_scores,
-        "current_step": "experience_analysis_complete"
+        "current_step": "experience_analysis_complete",
     }

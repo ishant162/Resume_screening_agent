@@ -67,7 +67,9 @@ class GitHubAnalyzer:
             followers = user.followers
 
             # Analyze repositories
-            repos = list(user.get_repos(sort="updated", direction="desc"))[:20]  # Top 20 recent
+            repos = list(user.get_repos(sort="updated", direction="desc"))[
+                :20
+            ]  # Top 20 recent
 
             # Extract languages
             languages = []
@@ -84,14 +86,17 @@ class GitHubAnalyzer:
                     # Consider "active" if updated in last year
                     if repo.updated_at:
                         from datetime import datetime, timezone
+
                         age_days = (datetime.now(timezone.utc) - repo.updated_at).days
                         if age_days < 365:
-                            active_repos.append({
-                                "name": repo.name,
-                                "language": repo.language,
-                                "stars": repo.stargazers_count,
-                                "description": repo.description
-                            })
+                            active_repos.append(
+                                {
+                                    "name": repo.name,
+                                    "language": repo.language,
+                                    "stars": repo.stargazers_count,
+                                    "description": repo.description,
+                                }
+                            )
 
             # Get top languages
             language_counts = Counter(languages)
@@ -107,8 +112,12 @@ class GitHubAnalyzer:
 
             # Generate assessment
             assessment = self._generate_assessment(
-                username, public_repos, followers, total_stars,
-                len(active_repos), primary_languages
+                username,
+                public_repos,
+                followers,
+                total_stars,
+                len(active_repos),
+                primary_languages,
             )
 
             result = {
@@ -121,7 +130,7 @@ class GitHubAnalyzer:
                 "total_stars": total_stars,
                 "contribution_score": round(contribution_score, 1),
                 "skills_validated": skills_validated,
-                "assessment": assessment
+                "assessment": assessment,
             }
 
             # Cache result
@@ -154,7 +163,7 @@ class GitHubAnalyzer:
             return {
                 "validated_skills": [],
                 "unvalidated_skills": claimed_skills,
-                "validation_confidence": 0.0
+                "validation_confidence": 0.0,
             }
 
         validated = []
@@ -173,7 +182,7 @@ class GitHubAnalyzer:
         return {
             "validated_skills": validated,
             "unvalidated_skills": unvalidated,
-            "validation_confidence": round(confidence, 2)
+            "validation_confidence": round(confidence, 2),
         }
 
     def _extract_username(self, github_url: str) -> str | None:
@@ -197,11 +206,7 @@ class GitHubAnalyzer:
         return None
 
     def _calculate_contribution_score(
-        self,
-        repos: int,
-        followers: int,
-        stars: int,
-        active_repos: int
+        self, repos: int, followers: int, stars: int, active_repos: int
     ) -> float:
         """
         Calculate contribution score (0-100)
@@ -260,7 +265,7 @@ class GitHubAnalyzer:
         followers: int,
         stars: int,
         active_repos: int,
-        languages: list[str]
+        languages: list[str],
     ) -> str:
         """Generate human-readable assessment"""
 
@@ -317,7 +322,7 @@ class GitHubAnalyzer:
             "total_stars": 0,
             "contribution_score": 0.0,
             "skills_validated": [],
-            "assessment": reason
+            "assessment": reason,
         }
 
 

@@ -4,6 +4,7 @@ Skill Taxonomy Engine
 Provides semantic understanding of skill relationships and equivalencies.
 """
 
+import json
 
 from fuzzywuzzy import fuzz
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -43,23 +44,39 @@ class SkillTaxonomy:
         self.hierarchies = {
             "python": ["django", "flask", "fastapi", "pandas", "numpy"],
             "javascript": ["react", "vue", "angular", "node.js", "express"],
-            "machine learning": ["deep learning", "nlp", "computer vision", "tensorflow", "pytorch"],
+            "machine learning": [
+                "deep learning",
+                "nlp",
+                "computer vision",
+                "tensorflow",
+                "pytorch",
+            ],
             "deep learning": ["cnn", "rnn", "lstm", "transformer"],
         }
 
         self.categories = {
-            "ml_frameworks": ["tensorflow", "pytorch", "keras", "scikit-learn", "xgboost"],
+            "ml_frameworks": [
+                "tensorflow",
+                "pytorch",
+                "keras",
+                "scikit-learn",
+                "xgboost",
+            ],
             "web_frameworks": ["react", "angular", "vue", "django", "flask", "spring"],
             "cloud_platforms": ["aws", "azure", "gcp", "google cloud"],
             "databases": ["mysql", "postgresql", "mongodb", "redis", "cassandra"],
-            "programming_languages": ["python", "java", "javascript", "typescript", "go", "rust"],
+            "programming_languages": [
+                "python",
+                "java",
+                "javascript",
+                "typescript",
+                "go",
+                "rust",
+            ],
         }
 
     def are_skills_equivalent(
-        self,
-        skill1: str,
-        skill2: str,
-        threshold: float = 0.7
+        self, skill1: str, skill2: str, threshold: float = 0.7
     ) -> tuple[bool, float, str]:
         """
         Check if two skills are equivalent or highly related
@@ -77,7 +94,11 @@ class SkillTaxonomy:
         # Check pre-defined equivalencies
         if skill1_lower in self.equivalencies:
             if skill2_lower in self.equivalencies[skill1_lower]:
-                return True, 0.9, f"{skill1} and {skill2} are considered equivalent frameworks"
+                return (
+                    True,
+                    0.9,
+                    f"{skill1} and {skill2} are considered equivalent frameworks",
+                )
 
         # Fuzzy string matching
         fuzzy_score = fuzz.ratio(skill1_lower, skill2_lower) / 100.0
@@ -113,45 +134,47 @@ class SkillTaxonomy:
         # Check equivalencies
         if skill_lower in self.equivalencies:
             for equiv in self.equivalencies[skill_lower]:
-                related.append({
-                    "skill": equiv.title(),
-                    "relationship": "equivalent",
-                    "score": 0.9
-                })
+                related.append(
+                    {"skill": equiv.title(), "relationship": "equivalent", "score": 0.9}
+                )
 
         # Check hierarchies (parent/child)
         for parent, children in self.hierarchies.items():
             if skill_lower == parent:
                 for child in children[:max_results]:
-                    related.append({
-                        "skill": child.title(),
-                        "relationship": "child_skill",
-                        "score": 0.7
-                    })
+                    related.append(
+                        {
+                            "skill": child.title(),
+                            "relationship": "child_skill",
+                            "score": 0.7,
+                        }
+                    )
             elif skill_lower in children:
-                related.append({
-                    "skill": parent.title(),
-                    "relationship": "parent_skill",
-                    "score": 0.7
-                })
+                related.append(
+                    {
+                        "skill": parent.title(),
+                        "relationship": "parent_skill",
+                        "score": 0.7,
+                    }
+                )
 
         # Find same-category skills
         for category, skills in self.categories.items():
             if skill_lower in skills:
                 for s in skills:
                     if s != skill_lower and len(related) < max_results:
-                        related.append({
-                            "skill": s.title(),
-                            "relationship": "same_category",
-                            "score": 0.6
-                        })
+                        related.append(
+                            {
+                                "skill": s.title(),
+                                "relationship": "same_category",
+                                "score": 0.6,
+                            }
+                        )
 
         return related[:max_results]
 
     def enhance_skill_matching(
-        self,
-        required_skill: str,
-        candidate_skills: list[str]
+        self, required_skill: str, candidate_skills: list[str]
     ) -> dict:
         """
         Enhanced matching that considers equivalencies and relationships
@@ -171,7 +194,9 @@ class SkillTaxonomy:
         related_matches = []
 
         for cand_skill in candidate_skills:
-            is_equiv, score, reasoning = self.are_skills_equivalent(required_skill, cand_skill)
+            is_equiv, score, reasoning = self.are_skills_equivalent(
+                required_skill, cand_skill
+            )
 
             if is_equiv and score >= 0.85:
                 equivalent_matches.append(cand_skill)
@@ -184,7 +209,9 @@ class SkillTaxonomy:
             reasoning = f"Candidate has exact skill: {required_skill}"
         elif equivalent_matches:
             match_score = 0.9
-            reasoning = f"Candidate has equivalent skill(s): {', '.join(equivalent_matches)}"
+            reasoning = (
+                f"Candidate has equivalent skill(s): {', '.join(equivalent_matches)}"
+            )
         elif related_matches:
             match_score = 0.7
             reasoning = f"Candidate has related skill(s): {', '.join(related_matches)}"
@@ -197,14 +224,13 @@ class SkillTaxonomy:
             "equivalent_matches": equivalent_matches,
             "related_matches": related_matches,
             "match_score": match_score,
-            "reasoning": reasoning
+            "reasoning": reasoning,
         }
 
-    def _llm_skill_similarity(self, skill1: str, skill2: str) -> dict:
+    def _llm_skill_similarity(self, skill1: str, skill2: str):
         """Use LLM to assess semantic similarity between skills"""
 
-        prompt = f"""
-            Are these two technical skills equivalent or highly related?
+        prompt = f"""Are these two technical skills equivalent or highly related?
 
             Skill 1: {skill1}
             Skill 2: {skill2}
@@ -214,31 +240,63 @@ class SkillTaxonomy:
             - Are they in the same domain? (e.g., React vs Vue - both frontend frameworks)
             - Would experience in one translate to the other?
 
-            Return JSON:
+            Return ONLY a JSON object with no markdown formatting:
             {{
-                "score": <float 0.0-1.0, where 1.0 is equivalent>,
-                "reasoning": "<1-2 sentence explanation>"
+                "score": 0.85,
+                "reasoning": "Both are deep learning frameworks with similar capabilities"
             }}
+
+            Score should be 0.0 to 1.0 where 1.0 means completely equivalent.
         """
 
         try:
             messages = [
-                SystemMessage(content="You are an expert at understanding technical skill relationships."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are an expert at understanding technical skill relationships. Return ONLY valid JSON, no markdown code blocks."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
-
-            import json
             response_text = response.content.strip()
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
 
-            result = json.loads(response_text.strip())
+            # Debug: Print what we got
+            # print(f"    DEBUG - Raw response: {response_text[:100]}")
+
+            # Remove any markdown code blocks
+            if "```json" in response_text:
+                response_text = (
+                    response_text.split("```json")[1].split("```")[0].strip()
+                )
+            elif "```" in response_text:
+                response_text = response_text.split("```")[1].split("```")[0].strip()
+
+            # Remove any leading/trailing whitespace
+            response_text = response_text.strip()
+
+            # If response is empty, return default
+            if not response_text:
+                print(f" Empty LLM response for {skill1} vs {skill2}")
+                return {"score": 0.0, "reasoning": "Empty response from LLM"}
+
+            # Try to parse JSON
+            result = json.loads(response_text)
+
+            # Validate structure
+            if "score" not in result or "reasoning" not in result:
+                print(f" Invalid JSON structure for {skill1} vs {skill2}")
+                return {"score": 0.0, "reasoning": "Invalid response structure"}
+
             return result
 
+        except json.JSONDecodeError as e:
+            print(f" JSON parse error for {skill1} vs {skill2}: {e}")
+            print(
+                f"    Response was: {response_text[:200] if 'response_text' in locals() else 'No response'}"
+            )
+            return {"score": 0.0, "reasoning": "Unable to parse LLM response"}
         except Exception as e:
-            print(f"    ⚠️  LLM similarity check failed: {e}")
+            print(f" LLM similarity check failed for {skill1} vs {skill2}: {e}")
             return {"score": 0.0, "reasoning": "Unable to assess"}
 
 

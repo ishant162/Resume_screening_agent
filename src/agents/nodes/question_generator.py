@@ -1,4 +1,3 @@
-
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import INTERVIEW_QUESTION_GENERATION_PROMPT
@@ -16,7 +15,7 @@ class QuestionGenerator:
         self,
         candidates: list[dict],
         job_requirements: dict,
-        candidate_scores: list[dict]
+        candidate_scores: list[dict],
     ) -> dict[str, list[str]]:
         """
         Generate personalized interview questions for all candidates
@@ -39,9 +38,7 @@ class QuestionGenerator:
 
         for candidate, score in zip(candidate_models, score_models):
             questions = self._generate_questions_for_candidate(
-                candidate,
-                job_req,
-                score
+                candidate, job_req, score
             )
             all_questions[candidate.name] = questions
 
@@ -53,7 +50,7 @@ class QuestionGenerator:
         self,
         candidate: Candidate,
         job_requirements: JobRequirements,
-        candidate_score: CandidateScore
+        candidate_score: CandidateScore,
     ) -> list[str]:
         """
         Generate personalized questions for a single candidate
@@ -76,30 +73,38 @@ class QuestionGenerator:
             total_experience_years=candidate.total_experience_years,
             highest_education=(
                 candidate.highest_education.degree
-                if candidate.highest_education else "Not specified"
+                if candidate.highest_education
+                else "Not specified"
             ),
             work_summary=work_summary,
             overall_score=f"{candidate_score.total_score:.1f}",
             skills_match_score=f"{candidate_score.skill_score.overall_skill_score:.1f}",
-            missing_critical_skills=", ".join(candidate_score.skill_score.missing_must_have)
-                if candidate_score.skill_score.missing_must_have else "None",
+            missing_critical_skills=", ".join(
+                candidate_score.skill_score.missing_must_have
+            )
+            if candidate_score.skill_score.missing_must_have
+            else "None",
             career_trajectory=candidate_score.experience_score.career_trajectory,
             key_strengths=self._format_list(candidate_score.strengths[:3]),
             key_concerns=(
                 self._format_list(candidate_score.concerns[:3])
-                if candidate_score.concerns else "None"
+                if candidate_score.concerns
+                else "None"
             ),
         )
         try:
             messages = [
-                SystemMessage(content="You are an expert technical interviewer who creates insightful, personalized questions."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are an expert technical interviewer who creates insightful, personalized questions."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
 
             # Parse JSON
             import json
+
             response_text = response.content.strip()
             if "```json" in response_text:
                 response_text = response_text.split("```json")[1].split("```")[0]
@@ -120,9 +125,7 @@ class QuestionGenerator:
             return self._generate_fallback_questions(candidate, job_requirements)
 
     def _generate_fallback_questions(
-        self,
-        candidate: Candidate,
-        job_requirements: JobRequirements
+        self, candidate: Candidate, job_requirements: JobRequirements
     ) -> list[str]:
         """Generate basic fallback questions"""
 
@@ -136,7 +139,7 @@ class QuestionGenerator:
             "Tell me about a time you collaborated with a team on a technical project.",
             "What's your approach to code quality and testing?",
             "How do you stay updated with industry trends and new technologies?",
-            "Can you describe your development workflow and tools you prefer?"
+            "Can you describe your development workflow and tools you prefer?",
         ]
 
         return questions
@@ -150,7 +153,9 @@ class QuestionGenerator:
         for exp in experiences:
             summary.append(f"- {exp.position} at {exp.company}")
             if exp.responsibilities:
-                summary.append(f"  Responsibilities: {'; '.join(exp.responsibilities[:2])}")
+                summary.append(
+                    f"  Responsibilities: {'; '.join(exp.responsibilities[:2])}"
+                )
 
         return "\n".join(summary)
 
@@ -168,16 +173,14 @@ def question_generator_node(state: dict) -> dict:
     generator = QuestionGenerator()
 
     questions = generator.generate_questions_for_candidates(
-        state["candidates"],
-        state["job_requirements"],
-        state["candidate_scores"]
+        state["candidates"], state["job_requirements"], state["candidate_scores"]
     )
 
     print(f"Generated questions for {len(questions)} candidates\n")
 
     return {
         "interview_questions": questions,
-        "current_step": "question_generation_complete"
+        "current_step": "question_generation_complete",
     }
 
 
@@ -205,7 +208,7 @@ if __name__ == "__main__":
             Skill(name="TensorFlow", priority=SkillPriority.MUST_HAVE),
         ],
         experience=ExperienceRequirement(minimum_years=5),
-        education=EducationRequirement(minimum_degree="Bachelor")
+        education=EducationRequirement(minimum_degree="Bachelor"),
     )
 
     candidate = Candidate(
@@ -220,12 +223,12 @@ if __name__ == "__main__":
                 end_date=date(2024, 1, 1),
                 responsibilities=[
                     "Built recommendation systems",
-                    "Deployed models to production"
+                    "Deployed models to production",
                 ],
-                technologies=["Python", "TensorFlow", "AWS"]
+                technologies=["Python", "TensorFlow", "AWS"],
             )
         ],
-        education=[]
+        education=[],
     )
 
     # Mock score
@@ -242,7 +245,7 @@ if __name__ == "__main__":
             must_have_match_percentage=100.0,
             nice_to_have_match_percentage=100.0,
             overall_skill_score=100.0,
-            skill_gap_analysis="Strong skills"
+            skill_gap_analysis="Strong skills",
         ),
         experience_score=ExperienceScore(
             candidate_name="Sarah Chen",
@@ -254,7 +257,7 @@ if __name__ == "__main__":
             has_role_progression=True,
             career_trajectory="upward",
             experience_match_score=95.0,
-            experience_analysis="Excellent"
+            experience_analysis="Excellent",
         ),
         education_score=EducationScore(
             candidate_name="Sarah Chen",
@@ -263,7 +266,7 @@ if __name__ == "__main__":
             meets_requirement=True,
             field_match=True,
             education_score=90.0,
-            education_analysis="Good"
+            education_analysis="Good",
         ),
         weighted_skill_score=50.0,
         weighted_experience_score=28.5,
@@ -274,18 +277,20 @@ if __name__ == "__main__":
         strengths=["Excellent Python skills", "Production ML experience"],
         concerns=[],
         red_flags=[],
-        detailed_analysis="Strong candidate"
+        detailed_analysis="Strong candidate",
     )
 
     generator = QuestionGenerator()
-    questions = generator._generate_questions_for_candidate(candidate, job, candidate_score)
+    questions = generator._generate_questions_for_candidate(
+        candidate, job, candidate_score
+    )
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"INTERVIEW QUESTIONS FOR {candidate.name}")
-    print("="*80)
+    print("=" * 80)
     print(f"\nGenerated {len(questions)} personalized questions:\n")
 
     for i, q in enumerate(questions, 1):
         print(f"{i}. {q}\n")
 
-    print("="*80)
+    print("=" * 80)

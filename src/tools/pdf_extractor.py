@@ -60,6 +60,7 @@ class PDFExtractor:
 
         return text
 
+
 # Quick test
 if __name__ == "__main__":
     # Test with a sample PDF

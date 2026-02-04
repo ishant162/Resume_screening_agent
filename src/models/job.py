@@ -18,6 +18,7 @@ class SkillPriority(str, Enum):
 
 class Skill(BaseModel):
     """Required skill with metadata"""
+
     name: str
     level: SkillLevel | None = None
     priority: SkillPriority = SkillPriority.MUST_HAVE
@@ -35,13 +36,12 @@ class Skill(BaseModel):
             return True
 
         # Alternative match
-        return any(
-            alt.lower() == candidate_skill_lower for alt in self.alternatives
-        )
+        return any(alt.lower() == candidate_skill_lower for alt in self.alternatives)
 
 
 class ExperienceRequirement(BaseModel):
     """Experience requirements"""
+
     minimum_years: int | None = None
     maximum_years: int | None = None
     preferred_years: int | None = None
@@ -52,6 +52,7 @@ class ExperienceRequirement(BaseModel):
 
 class EducationRequirement(BaseModel):
     """Education requirements"""
+
     minimum_degree: str  # e.g., "Bachelor", "Master"
     preferred_degree: str | None = None
     fields_of_study: list[str] = Field(default_factory=list)
@@ -95,16 +96,14 @@ class JobRequirements(BaseModel):
     def must_have_skills(self) -> list[Skill]:
         """Get only must-have skills"""
         return [
-            s for s in self.technical_skills
-            if s.priority == SkillPriority.MUST_HAVE
+            s for s in self.technical_skills if s.priority == SkillPriority.MUST_HAVE
         ]
 
     @property
     def nice_to_have_skills(self) -> list[Skill]:
         """Get nice-to-have skills"""
         return [
-            s for s in self.technical_skills
-            if s.priority == SkillPriority.NICE_TO_HAVE
+            s for s in self.technical_skills if s.priority == SkillPriority.NICE_TO_HAVE
         ]
 
     @property

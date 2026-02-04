@@ -22,7 +22,6 @@ __all__ = [
     "Education",
     "Project",
     "Certification",
-
     # Job models
     "JobRequirements",
     "Skill",
@@ -30,7 +29,6 @@ __all__ = [
     "EducationRequirement",
     "SkillLevel",
     "SkillPriority",
-
     # Score models
     "SkillScore",
     "ExperienceScore",

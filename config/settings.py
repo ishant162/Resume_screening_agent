@@ -1,4 +1,3 @@
-
 from pydantic_settings import BaseSettings
 
 
@@ -22,8 +21,8 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-        env_file_encoding = 'utf-8'
-        extra = 'ignore'  # Add this line to ignore extra env vars
+        env_file_encoding = "utf-8"
+        extra = "ignore"  # Add this line to ignore extra env vars
 
 
 # Global settings instance

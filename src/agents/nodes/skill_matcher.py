@@ -14,9 +14,7 @@ class SkillMatcher:
         self.llm = GroqLLM().get_llm_model()
 
     def match_skills(
-        self,
-        candidate: Candidate,
-        job_requirements: JobRequirements
+        self, candidate: Candidate, job_requirements: JobRequirements
     ) -> SkillScore:
         """
         Use LLM to intelligently match and analyze candidate skills
@@ -38,8 +36,7 @@ class SkillMatcher:
 
         # Prepare data for the prompt template
         must_have_skills_list = [
-            f"{s.name} ({s.years_required}+ years)" if s.years_required
-            else s.name
+            f"{s.name} ({s.years_required}+ years)" if s.years_required else s.name
             for s in job_requirements.must_have_skills
         ]
 
@@ -47,18 +44,24 @@ class SkillMatcher:
             s.name for s in job_requirements.nice_to_have_skills
         ]
 
-        recent_projects_str = ', '.join([
-            p.name for p in candidate.projects[:3]
-        ]) if candidate.projects else 'None listed'
+        recent_projects_str = (
+            ", ".join([p.name for p in candidate.projects[:3]])
+            if candidate.projects
+            else "None listed"
+        )
 
         # Format the prompt using SKILL_MATCHING_PROMPT template
         prompt = SKILL_MATCHING_PROMPT.format(
-            must_have_skills=', '.join(must_have_skills_list) if must_have_skills_list else 'None',
-            nice_to_have_skills=', '.join(nice_to_have_skills_list) if nice_to_have_skills_list else 'None',
+            must_have_skills=", ".join(must_have_skills_list)
+            if must_have_skills_list
+            else "None",
+            nice_to_have_skills=", ".join(nice_to_have_skills_list)
+            if nice_to_have_skills_list
+            else "None",
             candidate_name=candidate.name,
-            candidate_skills=', '.join(candidate.all_skills),
+            candidate_skills=", ".join(candidate.all_skills),
             total_experience=candidate.total_experience_years,
-            recent_projects=recent_projects_str
+            recent_projects=recent_projects_str,
         )
 
         # Call LLM with system message for context
@@ -74,7 +77,7 @@ class SkillMatcher:
                 Be thorough but fair in your assessment. Recognize when skills are transferable or closely related.
                 """
             ),
-            HumanMessage(content=prompt)
+            HumanMessage(content=prompt),
         ]
 
         response = self.llm.invoke(messages)
@@ -91,10 +94,14 @@ class SkillMatcher:
                 missing_must_have=skill_analysis["missing_must_have"],
                 missing_nice_to_have=skill_analysis["missing_nice_to_have"],
                 additional_skills=skill_analysis["additional_skills"][:10],
-                must_have_match_percentage=round(skill_analysis["must_have_match_percentage"], 1),
-                nice_to_have_match_percentage=round(skill_analysis["nice_to_have_match_percentage"], 1),
+                must_have_match_percentage=round(
+                    skill_analysis["must_have_match_percentage"], 1
+                ),
+                nice_to_have_match_percentage=round(
+                    skill_analysis["nice_to_have_match_percentage"], 1
+                ),
                 overall_skill_score=round(skill_analysis["overall_skill_score"], 1),
-                skill_gap_analysis=skill_analysis["skill_gap_analysis"]
+                skill_gap_analysis=skill_analysis["skill_gap_analysis"],
             )
 
         except Exception as e:
@@ -115,9 +122,7 @@ class SkillMatcher:
         return json.loads(response_text.strip())
 
     def _fallback_matching(
-        self,
-        candidate: Candidate,
-        job_requirements: JobRequirements
+        self, candidate: Candidate, job_requirements: JobRequirements
     ) -> SkillScore:
         """Fallback to basic rule-based matching if LLM fails"""
         print(f"  Using fallback matching for {candidate.name}")
@@ -126,17 +131,18 @@ class SkillMatcher:
         must_have_skills = job_requirements.must_have_skills
 
         matched_must_have = [
-            s.name for s in must_have_skills
-            if s.name.lower() in candidate_skills_set
+            s.name for s in must_have_skills if s.name.lower() in candidate_skills_set
         ]
         missing_must_have = [
-            s.name for s in must_have_skills
+            s.name
+            for s in must_have_skills
             if s.name.lower() not in candidate_skills_set
         ]
 
         must_have_match_pct = (
             (len(matched_must_have) / len(must_have_skills) * 100)
-            if must_have_skills else 100.0
+            if must_have_skills
+            else 100.0
         )
 
         return SkillScore(
@@ -149,7 +155,7 @@ class SkillMatcher:
             must_have_match_percentage=round(must_have_match_pct, 1),
             nice_to_have_match_percentage=0.0,
             overall_skill_score=round(must_have_match_pct * 0.8, 1),
-            skill_gap_analysis=f"Basic analysis: Matches {len(matched_must_have)}/{len(must_have_skills)} must-have skills."
+            skill_gap_analysis=f"Basic analysis: Matches {len(matched_must_have)}/{len(must_have_skills)} must-have skills.",
         )
 
 
@@ -171,15 +177,14 @@ def skill_matcher_node(state: dict) -> dict:
         skill_score = matcher.match_skills(candidate, job_req)
         skill_scores.append(skill_score.model_dump())
 
-        print(f" {candidate.name}: {skill_score.overall_skill_score:.1f}% match "
-              f"({len(skill_score.matched_must_have)}/{len(job_req.must_have_skills)} must-haves)")
+        print(
+            f" {candidate.name}: {skill_score.overall_skill_score:.1f}% match "
+            f"({len(skill_score.matched_must_have)}/{len(job_req.must_have_skills)} must-haves)"
+        )
 
     print(" Skill matching complete!\n")
 
-    return {
-        "skill_scores": skill_scores,
-        "current_step": "skill_matching_complete"
-    }
+    return {"skill_scores": skill_scores, "current_step": "skill_matching_complete"}
 
 
 # Test independently
@@ -197,7 +202,7 @@ if __name__ == "__main__":
             Skill(name="AWS", priority=SkillPriority.NICE_TO_HAVE),
         ],
         experience=ExperienceRequirement(minimum_years=3),
-        education=EducationRequirement(minimum_degree="Bachelor")
+        education=EducationRequirement(minimum_degree="Bachelor"),
     )
 
     # Mock candidate
@@ -206,15 +211,21 @@ if __name__ == "__main__":
         technical_skills=["Python", "PyTorch", "Kubernetes", "Git", "Linux"],
         work_experience=[],
         education=[],
-        projects=[Project(name="Image Classification", description="Built CNN", technologies=["PyTorch"])]
+        projects=[
+            Project(
+                name="Image Classification",
+                description="Built CNN",
+                technologies=["PyTorch"],
+            )
+        ],
     )
 
     matcher = SkillMatcher()
     score = matcher.match_skills(candidate, job)
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print(" AI-Powered Skill Match Result:")
-    print("="*60)
+    print("=" * 60)
     print(f"Overall Score: {score.overall_skill_score}%")
     print(f"Must-Have Match: {score.must_have_match_percentage}%")
     print(f"Matched Must-Have: {score.matched_must_have}")

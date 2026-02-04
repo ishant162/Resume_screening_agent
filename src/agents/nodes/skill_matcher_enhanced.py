@@ -5,7 +5,6 @@ Uses skill taxonomy for semantic/intelligent matching.
 Understands that TensorFlow ≈ PyTorch, React → Vue, etc.
 """
 
-
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import SEMANTIC_SKILL_MATCH_ANALYSIS_PROMPT
@@ -25,7 +24,7 @@ class EnhancedSkillMatcher:
         self,
         candidate: Candidate,
         job_requirements: JobRequirements,
-        taxonomy_data: dict = None
+        taxonomy_data: dict = None,
     ) -> SkillScore:
         """
         Enhanced skill matching using taxonomy
@@ -58,8 +57,7 @@ class EnhancedSkillMatcher:
 
                 for cand_skill in candidate.technical_skills:
                     enhancement = self.taxonomy.enhance_skill_matching(
-                        required_skill.name,
-                        [cand_skill]
+                        required_skill.name, [cand_skill]
                     )
 
                     if enhancement["match_score"] >= 0.7:  # 70% threshold
@@ -67,7 +65,7 @@ class EnhancedSkillMatcher:
                         equivalent_matches[required_skill.name] = {
                             "candidate_skill": cand_skill,
                             "match_score": enhancement["match_score"],
-                            "reasoning": enhancement["reasoning"]
+                            "reasoning": enhancement["reasoning"],
                         }
                         match_found = True
                         break
@@ -95,21 +93,26 @@ class EnhancedSkillMatcher:
                     missing_nice_to_have.append(required_skill.name)
 
         # Find additional skills
-        all_required_skill_names = set(s.name.lower() for s in job_requirements.technical_skills)
+        all_required_skill_names = set(
+            s.name.lower() for s in job_requirements.technical_skills
+        )
         additional_skills = [
-            skill for skill in candidate.technical_skills
+            skill
+            for skill in candidate.technical_skills
             if skill.lower() not in all_required_skill_names
         ]
 
         # Calculate match percentages
         must_have_match_pct = (
             (len(matched_must_have) / len(must_have_skills) * 100)
-            if must_have_skills else 100.0
+            if must_have_skills
+            else 100.0
         )
 
         nice_to_have_match_pct = (
             (len(matched_nice_to_have) / len(nice_to_have_skills) * 100)
-            if nice_to_have_skills else 100.0
+            if nice_to_have_skills
+            else 100.0
         )
 
         # Overall skill score with taxonomy bonus
@@ -126,7 +129,7 @@ class EnhancedSkillMatcher:
             missing_must_have,
             equivalent_matches,
             matched_nice_to_have,
-            additional_skills
+            additional_skills,
         )
 
         return SkillScore(
@@ -139,7 +142,7 @@ class EnhancedSkillMatcher:
             must_have_match_percentage=round(must_have_match_pct, 1),
             nice_to_have_match_percentage=round(nice_to_have_match_pct, 1),
             overall_skill_score=round(overall_score, 1),
-            skill_gap_analysis=gap_analysis
+            skill_gap_analysis=gap_analysis,
         )
 
     def _generate_enhanced_gap_analysis(
@@ -149,7 +152,7 @@ class EnhancedSkillMatcher:
         missing_must: list[str],
         equivalent_matches: dict,
         matched_nice: list[str],
-        additional: list[str]
+        additional: list[str],
     ) -> str:
         """Generate enhanced gap analysis mentioning equivalent skills"""
 
@@ -164,8 +167,10 @@ class EnhancedSkillMatcher:
 
         try:
             messages = [
-                SystemMessage(content="You are an expert technical recruiter with deep understanding of skill relationships."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are an expert technical recruiter with deep understanding of skill relationships."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
@@ -224,7 +229,4 @@ def skill_matcher_enhanced_node(state: dict) -> dict:
 
     print(" Enhanced skill matching complete\n")
 
-    return {
-        "skill_scores": skill_scores,
-        "current_step": "skill_matching_complete"
-    }
+    return {"skill_scores": skill_scores, "current_step": "skill_matching_complete"}

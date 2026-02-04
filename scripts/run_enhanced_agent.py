@@ -19,7 +19,7 @@ from src.agents.graph.graph_enhanced import create_enhanced_screening_graph
 
 def load_job_description(job_path: str) -> str:
     """Load job description from file"""
-    with open(job_path, encoding='utf-8') as f:
+    with open(job_path, encoding="utf-8") as f:
         return f.read()
 
 
@@ -39,7 +39,7 @@ def load_resumes(resume_paths: list) -> tuple:
             print(f"Warning: {path} not found, skipping...")
             continue
 
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             resumes.append(f.read())
             filenames.append(path_obj.name)
 
@@ -54,7 +54,7 @@ def save_report(report: str, output_dir: str) -> Path:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     report_file = output_path / f"enhanced_screening_report_{timestamp}.md"
 
-    with open(report_file, 'w', encoding='utf-8') as f:
+    with open(report_file, "w", encoding="utf-8") as f:
         f.write(report)
 
     return report_file
@@ -68,7 +68,7 @@ def save_questions(questions: dict, output_dir: str) -> Path:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     questions_file = output_path / f"interview_questions_{timestamp}.md"
 
-    with open(questions_file, 'w', encoding='utf-8') as f:
+    with open(questions_file, "w", encoding="utf-8") as f:
         f.write("# Interview Questions\n\n")
 
         for candidate_name, question_list in questions.items():
@@ -82,9 +82,9 @@ def save_questions(questions: dict, output_dir: str) -> Path:
 
 def print_summary(result: dict):
     """Print execution summary"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("EXECUTION SUMMARY")
-    print("="*80)
+    print("=" * 80)
 
     # Job info
     job_req = result.get("job_requirements", {})
@@ -98,9 +98,17 @@ def print_summary(result: dict):
     tool_plan = result.get("tool_plan", {})
     if tool_plan:
         print("\nTool Usage:")
-        web_search_count = sum(1 for plan in tool_plan.values() if "web_search" in plan.get("tools", []))
-        github_count = sum(1 for plan in tool_plan.values() if "github" in plan.get("tools", []))
-        taxonomy_count = sum(1 for plan in tool_plan.values() if "skill_taxonomy" in plan.get("tools", []))
+        web_search_count = sum(
+            1 for plan in tool_plan.values() if "web_search" in plan.get("tools", [])
+        )
+        github_count = sum(
+            1 for plan in tool_plan.values() if "github" in plan.get("tools", [])
+        )
+        taxonomy_count = sum(
+            1
+            for plan in tool_plan.values()
+            if "skill_taxonomy" in plan.get("tools", [])
+        )
 
         print(f"  Web Search: {web_search_count} candidates")
         print(f"  GitHub Analysis: {github_count} candidates")
@@ -120,7 +128,9 @@ def print_summary(result: dict):
     bias_analysis = result.get("bias_analysis", {})
     if bias_analysis:
         print("\nBias Analysis:")
-        print(f"  Bias Score: {bias_analysis.get('bias_score', 0):.1f}/100 (lower is better)")
+        print(
+            f"  Bias Score: {bias_analysis.get('bias_score', 0):.1f}/100 (lower is better)"
+        )
         print(f"  Assessment: {bias_analysis.get('fairness_assessment', 'N/A')}")
 
     # Top candidate
@@ -135,15 +145,15 @@ def print_summary(result: dict):
 
         # Salary estimate
         salary_estimates = result.get("salary_estimates", {})
-        if candidate_score.get('candidate_name') in salary_estimates:
-            salary = salary_estimates[candidate_score['candidate_name']]
-            median = salary.get('adjusted_range', {}).get('median', 0)
+        if candidate_score.get("candidate_name") in salary_estimates:
+            salary = salary_estimates[candidate_score["candidate_name"]]
+            median = salary.get("adjusted_range", {}).get("median", 0)
             print(f"   Estimated Salary: ${median:,}")
 
         # ATS score
         ats_scores = result.get("ats_scores", {})
-        if candidate_score.get('candidate_name') in ats_scores:
-            ats = ats_scores[candidate_score['candidate_name']]
+        if candidate_score.get("candidate_name") in ats_scores:
+            ats = ats_scores[candidate_score["candidate_name"]]
             print(f"   ATS Score: {ats.get('overall_score', 0):.1f}/100")
 
     # Show all rankings
@@ -156,12 +166,12 @@ def print_summary(result: dict):
         rec = cs.get("recommendation", "N/A")
         print(f"   #{rank} {name}: {score:.1f}% ({rec})")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Enhanced Agentic Resume Screening Agent',
+        description="Enhanced Agentic Resume Screening Agent",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -175,32 +185,25 @@ Examples:
       --job job.txt \\
       --resumes resume1.pdf resume2.pdf \\
       --output ./results
-        """
+        """,
     )
 
     parser.add_argument(
-        '--job',
-        required=True,
-        help='Path to job description file (.txt)'
+        "--job", required=True, help="Path to job description file (.txt)"
     )
 
     parser.add_argument(
-        '--resumes',
-        nargs='+',
-        required=True,
-        help='Paths to resume PDF files'
+        "--resumes", nargs="+", required=True, help="Paths to resume PDF files"
     )
 
     parser.add_argument(
-        '--output',
-        default='data/outputs',
-        help='Output directory for reports (default: data/outputs)'
+        "--output",
+        default="data/outputs",
+        help="Output directory for reports (default: data/outputs)",
     )
 
     parser.add_argument(
-        '--verbose',
-        action='store_true',
-        help='Show detailed execution logs'
+        "--verbose", action="store_true", help="Show detailed execution logs"
     )
 
     args = parser.parse_args()
@@ -210,17 +213,17 @@ Examples:
         print(f"Error: Job description file not found: {args.job}")
         sys.exit(1)
 
-    print("="*80)
+    print("=" * 80)
     print("ENHANCED AGENTIC RESUME SCREENING AGENT")
-    print("="*80)
+    print("=" * 80)
     print(f"\nJob Description: {args.job}")
     print(f"Resumes to screen: {len(args.resumes)}")
     for resume in args.resumes:
         print(f"   - {resume}")
     print(f"Output directory: {args.output}")
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("STARTING ENHANCED WORKFLOW...")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     try:
         # Load data
@@ -241,16 +244,16 @@ Examples:
             "resume_filenames": filenames,
             "candidates": [],
             "errors": [],
-            "reanalysis_count": 0
+            "reanalysis_count": 0,
         }
 
         # Create and run the enhanced graph
         print("Initializing enhanced agentic workflow...\n")
         app = create_enhanced_screening_graph()
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("EXECUTING ENHANCED WORKFLOW")
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
         result = app.invoke(initial_state)
 
@@ -289,6 +292,7 @@ Examples:
         print(f"\nError during execution: {e}")
         if args.verbose:
             import traceback
+
             traceback.print_exc()
         sys.exit(1)
 

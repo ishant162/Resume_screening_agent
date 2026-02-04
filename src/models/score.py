@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, computed_field
 
 class SkillScore(BaseModel):
     """Skill matching score for a candidate"""
+
     candidate_name: str
 
     # Matched skills
@@ -35,6 +36,7 @@ class SkillScore(BaseModel):
 
 class ExperienceScore(BaseModel):
     """Experience evaluation score"""
+
     candidate_name: str
 
     total_years: float
@@ -66,6 +68,7 @@ class ExperienceScore(BaseModel):
 
 class EducationScore(BaseModel):
     """Education verification score"""
+
     candidate_name: str
 
     highest_degree: str | None = None
@@ -84,6 +87,7 @@ class EducationScore(BaseModel):
 
 class CandidateScore(BaseModel):
     """Aggregated score for a candidate"""
+
     candidate_name: str
     candidate_email: str | None = None
 
@@ -101,7 +105,9 @@ class CandidateScore(BaseModel):
     total_score: float  # 0-100
 
     # Recommendation
-    recommendation: str  # "Strong Match", "Good Match", "Potential Match", "Not Recommended"
+    recommendation: (
+        str  # "Strong Match", "Good Match", "Potential Match", "Not Recommended"
+    )
     confidence_level: str  # "High", "Medium", "Low"
 
     # Summary
@@ -134,6 +140,7 @@ class CandidateScore(BaseModel):
 
 class RankedCandidate(BaseModel):
     """Candidate with ranking information"""
+
     rank: int
     candidate_score: CandidateScore
 

@@ -33,6 +33,9 @@ python-dotenv
 # UI    
 streamlit   
 gradio
+plotly 
+streamlit-aggrid
+streamlit-extras
 
 # # Web Search & Scraping
 duckduckgo-search

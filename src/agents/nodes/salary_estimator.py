@@ -4,7 +4,6 @@ Salary Estimator Node
 Wraps the SalaryEstimator tool in a LangGraph node.
 """
 
-
 from src.tools import SalaryEstimator
 
 
@@ -14,9 +13,9 @@ def salary_estimator_node(state: dict) -> dict:
 
     Provides compensation benchmarking for hiring decisions.
     """
-    print("="*80)
+    print("=" * 80)
     print("SALARY ESTIMATOR - COMPENSATION ANALYSIS")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     estimator = SalaryEstimator()
 
@@ -27,10 +26,7 @@ def salary_estimator_node(state: dict) -> dict:
 
         print(f"  Estimating salary for {candidate_name}...")
 
-        estimate = estimator.estimate_salary(
-            candidate_data,
-            state["job_requirements"]
-        )
+        estimate = estimator.estimate_salary(candidate_data, state["job_requirements"])
 
         salary_estimates[candidate_name] = estimate
 
@@ -41,7 +37,7 @@ def salary_estimator_node(state: dict) -> dict:
 
     return {
         "salary_estimates": salary_estimates,
-        "current_step": "salary_estimation_complete"
+        "current_step": "salary_estimation_complete",
     }
 
 
@@ -57,13 +53,13 @@ if __name__ == "__main__":
                 "total_experience_years": 6,
                 "technical_skills": ["Python", "TensorFlow"],
                 "location": "San Francisco, CA",
-                "education": [{"degree": "Master"}]
+                "education": [{"degree": "Master"}],
             }
         ],
         "job_requirements": {
             "job_title": "Senior ML Engineer",
-            "job_description": "Build ML systems for fintech"
-        }
+            "job_description": "Build ML systems for fintech",
+        },
     }
 
     result = salary_estimator_node(state)
@@ -71,5 +67,7 @@ if __name__ == "__main__":
 
     for name, estimate in result["salary_estimates"].items():
         print(f"\n{name}:")
-        print(f"  Range: ${estimate['adjusted_range']['min']:,} - ${estimate['adjusted_range']['max']:,}")
+        print(
+            f"  Range: ${estimate['adjusted_range']['min']:,} - ${estimate['adjusted_range']['max']:,}"
+        )
         print(f"  Confidence: {estimate['confidence']:.0%}")

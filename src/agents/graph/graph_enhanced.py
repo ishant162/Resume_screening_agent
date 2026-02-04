@@ -39,14 +39,18 @@ def should_reanalyze(state: dict) -> Literal["reanalyze", "continue"]:
 
     # Limit reanalysis to prevent infinite loops
     if needs_reanalysis and reanalysis_count < 2:
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("QUALITY CHECKER TRIGGERED RE-ANALYSIS")
-        print("="*80)
-        print(f"Confidence was too low. Re-analyzing (attempt {reanalysis_count + 1}/2)...\n")
+        print("=" * 80)
+        print(
+            f"Confidence was too low. Re-analyzing (attempt {reanalysis_count + 1}/2)...\n"
+        )
         return "reanalyze"
     else:
         if needs_reanalysis and reanalysis_count >= 2:
-            print("\nMaximum re-analysis attempts reached. Continuing with current results.\n")
+            print(
+                "\nMaximum re-analysis attempts reached. Continuing with current results.\n"
+            )
         return "continue"
 
 
@@ -87,7 +91,6 @@ def create_enhanced_screening_graph() -> StateGraph:
     print("Added all nodes")
     print("Connecting workflow edges...")
 
-
     workflow.set_entry_point("job_analyzer")
 
     workflow.add_edge("job_analyzer", "resume_parser")
@@ -105,10 +108,7 @@ def create_enhanced_screening_graph() -> StateGraph:
     workflow.add_conditional_edges(
         "quality_checker",
         should_reanalyze,
-        {
-            "reanalyze": "experience_analyzer_enhanced",
-            "continue": "bias_detector"
-        }
+        {"reanalyze": "experience_analyzer_enhanced", "continue": "bias_detector"},
     )
 
     workflow.add_edge("bias_detector", "salary_estimator")
@@ -147,9 +147,9 @@ def visualize_enhanced_graph(output_path: str = "enhanced_workflow_diagram.png")
 
 def print_graph_summary():
     """Print a summary of the enhanced graph structure"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("ENHANCED AGENTIC WORKFLOW STRUCTURE")
-    print("="*80)
+    print("=" * 80)
 
     print("\nPHASE 1: Initial Analysis")
     print("  1. Job Analyzer - Extract requirements from JD")
@@ -182,9 +182,9 @@ def print_graph_summary():
     print("  13. Report Generator - Comprehensive markdown report")
     print("  14. Question Generator - Personalized interview questions")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("KEY AGENTIC FEATURES:")
-    print("="*80)
+    print("=" * 80)
     print("  ✨ Tool Coordinator: LLM intelligently selects tools per candidate")
     print("  ✨ Conditional Routing: Self-reflection can trigger re-analysis")
     print("  ✨ Semantic Understanding: Skill taxonomy for better matching")
@@ -192,33 +192,35 @@ def print_graph_summary():
     print("  ✨ Quality Assurance: Confidence validation with feedback loop")
     print("  ✨ Fairness: Bias detection for ethical hiring")
     print("  ✨ Comprehensive: Salary + ATS scoring for complete assessment")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
 
 # Test the graph
 if __name__ == "__main__":
-    print("="*80)
+    print("=" * 80)
     print("ENHANCED AGENTIC RESUME SCREENING GRAPH")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     print_graph_summary()
 
     print("Creating enhanced graph...")
     app = create_enhanced_screening_graph()
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("GRAPH STATISTICS")
-    print("="*80)
+    print("=" * 80)
     print("  Total Nodes: 14")
     print("  Conditional Edges: 1 (quality checker re-analysis)")
     print("  Linear Edges: 12")
     print("  Entry Point: job_analyzer")
     print("  Exit Point: question_generator")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     print("Attempting to create workflow diagram...")
     visualize_enhanced_graph()
 
     print("\nEnhanced graph is ready for execution!")
     print("\nTo run the agent:")
-    print("  python scripts/run_enhanced_agent.py --job <job.txt> --resumes <resumes/*.pdf>")
+    print(
+        "  python scripts/run_enhanced_agent.py --job <job.txt> --resumes <resumes/*.pdf>"
+    )

@@ -34,7 +34,6 @@ __all__ = [
     "scorer_node",
     "report_generator_node",
     "question_generator_node",
-
     # Enhanced agentic nodes
     "tool_coordinator_node",
     "candidate_enricher_node",

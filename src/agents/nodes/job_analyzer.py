@@ -31,8 +31,10 @@ class JobAnalyzer:
         """
         prompt = JOB_ANALYSIS_PROMPT.format(job_description=job_description)
         messages = [
-            SystemMessage(content="You are an expert recruiter. Extract job requirements accurately."),
-            HumanMessage(content=prompt)
+            SystemMessage(
+                content="You are an expert recruiter. Extract job requirements accurately."
+            ),
+            HumanMessage(content=prompt),
         ]
         response = self.llm.invoke(messages)
 
@@ -59,7 +61,9 @@ class JobAnalyzer:
                 job_description=job_description,
                 technical_skills=[],
                 experience=ExperienceRequirement(),
-                education=EducationRequirement(minimum_degree="Bachelor", required=False)
+                education=EducationRequirement(
+                    minimum_degree="Bachelor", required=False
+                ),
             )
 
     def _convert_to_model(self, job_data: dict, original_jd: str) -> JobRequirements:
@@ -70,15 +74,21 @@ class JobAnalyzer:
         for skill_data in job_data.get("technical_skills", []):
             if isinstance(skill_data, str):
                 # Simple string format
-                technical_skills.append(Skill(name=skill_data, priority=SkillPriority.MUST_HAVE))
+                technical_skills.append(
+                    Skill(name=skill_data, priority=SkillPriority.MUST_HAVE)
+                )
             else:
                 # Detailed format
                 priority = skill_data.get("priority", "must_have")
-                technical_skills.append(Skill(
-                    name=skill_data["name"],
-                    priority=SkillPriority(priority) if priority in ["must_have", "nice_to_have", "preferred"] else SkillPriority.MUST_HAVE,
-                    years_required=skill_data.get("years_required")
-                ))
+                technical_skills.append(
+                    Skill(
+                        name=skill_data["name"],
+                        priority=SkillPriority(priority)
+                        if priority in ["must_have", "nice_to_have", "preferred"]
+                        else SkillPriority.MUST_HAVE,
+                        years_required=skill_data.get("years_required"),
+                    )
+                )
 
         # Parse experience requirements
         exp_data = job_data.get("experience", {})
@@ -86,7 +96,7 @@ class JobAnalyzer:
             minimum_years=exp_data.get("minimum_years"),
             preferred_years=exp_data.get("preferred_years"),
             specific_domains=exp_data.get("specific_domains", []),
-            role_types=exp_data.get("role_types", [])
+            role_types=exp_data.get("role_types", []),
         )
 
         # Parse education requirements
@@ -95,7 +105,7 @@ class JobAnalyzer:
             minimum_degree=edu_data.get("minimum_degree", "Bachelor"),
             preferred_degree=edu_data.get("preferred_degree"),
             fields_of_study=edu_data.get("fields_of_study", []),
-            required=edu_data.get("required", True)
+            required=edu_data.get("required", True),
         )
 
         # Create JobRequirements object
@@ -109,7 +119,7 @@ class JobAnalyzer:
             experience=experience,
             education=education,
             certifications=job_data.get("certifications", []),
-            preferred_qualifications=job_data.get("preferred_qualifications", [])
+            preferred_qualifications=job_data.get("preferred_qualifications", []),
         )
 
 
@@ -128,7 +138,7 @@ def job_analyzer_node(state: dict) -> dict:
     # Convert to dict for state (LangGraph works with dicts)
     return {
         "job_requirements": job_requirements.model_dump(),
-        "current_step": "job_analysis_complete"
+        "current_step": "job_analysis_complete",
     }
 
 

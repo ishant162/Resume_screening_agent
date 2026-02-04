@@ -37,7 +37,7 @@ class QualityChecker:
         candidates: list[dict],
         ranked_candidates: list[dict],
         job_requirements: dict,
-        reanalysis_count: int = 0
+        reanalysis_count: int = 0,
     ) -> dict:
         """
         Perform quality check on analysis results
@@ -77,10 +77,7 @@ class QualityChecker:
 
         # Check 4: LLM-based self-reflection
         reflection = self._llm_self_reflection(
-            candidates,
-            ranked_candidates,
-            job_requirements,
-            issues
+            candidates, ranked_candidates, job_requirements, issues
         )
 
         # Aggregate findings
@@ -93,15 +90,14 @@ class QualityChecker:
 
         # Determine if reanalysis is needed
         needs_reanalysis = (
-            overall_confidence < self.confidence_threshold and
-            reanalysis_count < 2  # Maximum 2 reanalysis attempts
+            overall_confidence < self.confidence_threshold
+            and reanalysis_count < 2  # Maximum 2 reanalysis attempts
         )
 
         if needs_reanalysis:
             # Identify which candidates need reanalysis
             candidates_to_reanalyze = self._identify_reanalysis_candidates(
-                ranked_candidates,
-                issues
+                ranked_candidates, issues
             )
 
         # Print quality check results
@@ -125,7 +121,7 @@ class QualityChecker:
             "needs_reanalysis": needs_reanalysis,
             "issues": issues,
             "recommendations": recommendations,
-            "candidates_to_reanalyze": candidates_to_reanalyze
+            "candidates_to_reanalyze": candidates_to_reanalyze,
         }
 
     def _check_data_completeness(self, candidates: list[dict]) -> list[str]:
@@ -158,21 +154,27 @@ class QualityChecker:
         scores = []
         for ranked in ranked_candidates:
             cs = ranked.get("candidate_score", {})
-            scores.append({
-                "name": cs.get("candidate_name", "Unknown"),
-                "total": cs.get("total_score", 0),
-                "skill": cs.get("skill_score", {}).get("overall_skill_score", 0),
-                "experience": cs.get("experience_score", {}).get("experience_match_score", 0),
-                "education": cs.get("education_score", {}).get("education_score", 0)
-            })
+            scores.append(
+                {
+                    "name": cs.get("candidate_name", "Unknown"),
+                    "total": cs.get("total_score", 0),
+                    "skill": cs.get("skill_score", {}).get("overall_skill_score", 0),
+                    "experience": cs.get("experience_score", {}).get(
+                        "experience_match_score", 0
+                    ),
+                    "education": cs.get("education_score", {}).get(
+                        "education_score", 0
+                    ),
+                }
+            )
 
         # Check for large gaps
         for i in range(len(scores) - 1):
-            gap = scores[i]["total"] - scores[i+1]["total"]
+            gap = scores[i]["total"] - scores[i + 1]["total"]
             if gap > self.score_gap_threshold:
                 issues.append(
                     f"Large score gap ({gap:.1f} points) between "
-                    f"{scores[i]['name']} and {scores[i+1]['name']}"
+                    f"{scores[i]['name']} and {scores[i + 1]['name']}"
                 )
 
         # Check for suspicious perfect scores
@@ -209,7 +211,10 @@ class QualityChecker:
 
             # Flag mismatches between score and recommendation
             total_score = cs.get("total_score", 0)
-            if total_score >= 85 and recommendation not in ["Strong Match", "Good Match"]:
+            if total_score >= 85 and recommendation not in [
+                "Strong Match",
+                "Good Match",
+            ]:
                 issues.append(
                     f"{name}: High score ({total_score:.1f}%) but weak recommendation ({recommendation})"
                 )
@@ -221,7 +226,7 @@ class QualityChecker:
         candidates: list[dict],
         ranked_candidates: list[dict],
         job_requirements: dict,
-        issues: list[str]
+        issues: list[str],
     ) -> dict:
         """
         Use LLM for comprehensive self-reflection
@@ -238,7 +243,9 @@ class QualityChecker:
                 f"{cs.get('total_score', 0):.1f}% ({cs.get('recommendation')})"
             )
 
-        current_issues = "\n".join([f"- {issue}" for issue in issues]) if issues else "None detected"
+        current_issues = (
+            "\n".join([f"- {issue}" for issue in issues]) if issues else "None detected"
+        )
 
         prompt = ANALYSIS_QUALITY_ASSURANCE_PROMPT.format(
             job_title=job_requirements.get("job_title", "Unknown Position"),
@@ -249,8 +256,10 @@ class QualityChecker:
 
         try:
             messages = [
-                SystemMessage(content="You are a quality assurance expert performing self-reflection on analysis results."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are a quality assurance expert performing self-reflection on analysis results."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
@@ -268,13 +277,11 @@ class QualityChecker:
                 "overall_confidence": 0.7,
                 "issues": [],
                 "recommendations": [],
-                "assessment": "Unable to perform self-reflection."
+                "assessment": "Unable to perform self-reflection.",
             }
 
     def _identify_reanalysis_candidates(
-        self,
-        ranked_candidates: list[dict],
-        issues: list[str]
+        self, ranked_candidates: list[dict], issues: list[str]
     ) -> list[str]:
         """Identify which candidates should be re-analyzed"""
 
@@ -292,7 +299,9 @@ class QualityChecker:
 
         # If no specific candidates, re-analyze top candidate
         if not candidates_to_reanalyze and ranked_candidates:
-            top_candidate = ranked_candidates[0].get("candidate_score", {}).get("candidate_name")
+            top_candidate = (
+                ranked_candidates[0].get("candidate_score", {}).get("candidate_name")
+            )
             if top_candidate:
                 candidates_to_reanalyze.append(top_candidate)
 
@@ -305,9 +314,9 @@ def quality_checker_node(state: dict) -> dict:
 
     This enables the agent to review its own work and request re-analysis!
     """
-    print("="*80)
+    print("=" * 80)
     print("QUALITY CHECKER - SELF-REFLECTION")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     checker = QualityChecker()
 
@@ -317,7 +326,7 @@ def quality_checker_node(state: dict) -> dict:
         state["candidates"],
         state["ranked_candidates"],
         state["job_requirements"],
-        reanalysis_count
+        reanalysis_count,
     )
 
     # Update reanalysis count if we're triggering reanalysis
@@ -328,7 +337,7 @@ def quality_checker_node(state: dict) -> dict:
     return {
         "quality_check": quality_check,
         "reanalysis_count": new_reanalysis_count,
-        "current_step": "quality_check_complete"
+        "current_step": "quality_check_complete",
     }
 
 
@@ -338,7 +347,12 @@ if __name__ == "__main__":
 
     # Mock data
     candidates = [
-        {"name": "Alice", "technical_skills": ["Python"], "work_experience": [], "total_experience_months": 60}
+        {
+            "name": "Alice",
+            "technical_skills": ["Python"],
+            "work_experience": [],
+            "total_experience_months": 60,
+        }
     ]
 
     ranked = [
@@ -351,8 +365,8 @@ if __name__ == "__main__":
                 "recommendation": "Potential Match",
                 "skill_score": {"overall_skill_score": 60},
                 "experience_score": {"experience_match_score": 50},
-                "education_score": {"education_score": 55}
-            }
+                "education_score": {"education_score": 55},
+            },
         }
     ]
 
@@ -361,11 +375,11 @@ if __name__ == "__main__":
     checker = QualityChecker()
     result = checker.check_quality(candidates, ranked, job)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("QUALITY CHECK RESULT")
-    print("="*80)
+    print("=" * 80)
     print(f"Confidence: {result['confidence']:.0%}")
     print(f"Needs Reanalysis: {result['needs_reanalysis']}")
     print(f"\nIssues: {len(result['issues'])}")
-    for issue in result['issues']:
+    for issue in result["issues"]:
         print(f"  - {issue}")

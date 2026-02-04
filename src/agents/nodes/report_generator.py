@@ -18,9 +18,7 @@ class ReportGenerator:
         self.llm = GroqLLM().get_llm_model()
 
     def generate_report(
-        self,
-        job_requirements: dict,
-        ranked_candidates: list[dict]
+        self, job_requirements: dict, ranked_candidates: list[dict]
     ) -> str:
         """
         Generate comprehensive markdown report
@@ -69,7 +67,7 @@ class ReportGenerator:
     def _generate_executive_summary(
         self,
         job_requirements: JobRequirements,
-        ranked_candidates: list[RankedCandidate]
+        ranked_candidates: list[RankedCandidate],
     ) -> str:
         """Use LLM to generate executive summary"""
 
@@ -93,8 +91,10 @@ class ReportGenerator:
 
         try:
             messages = [
-                SystemMessage(content="You are an expert at writing concise executive summaries for hiring."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are an expert at writing concise executive summaries for hiring."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
@@ -116,17 +116,31 @@ class ReportGenerator:
 """
 
     def _generate_summary_section(
-        self,
-        exec_summary: str,
-        ranked_candidates: list[RankedCandidate]
+        self, exec_summary: str, ranked_candidates: list[RankedCandidate]
     ) -> str:
         """Generate summary section"""
 
         # Count recommendations
-        strong = sum(1 for rc in ranked_candidates if rc.candidate_score.recommendation == "Strong Match")
-        good = sum(1 for rc in ranked_candidates if rc.candidate_score.recommendation == "Good Match")
-        potential = sum(1 for rc in ranked_candidates if rc.candidate_score.recommendation == "Potential Match")
-        not_rec = sum(1 for rc in ranked_candidates if rc.candidate_score.recommendation == "Not Recommended")
+        strong = sum(
+            1
+            for rc in ranked_candidates
+            if rc.candidate_score.recommendation == "Strong Match"
+        )
+        good = sum(
+            1
+            for rc in ranked_candidates
+            if rc.candidate_score.recommendation == "Good Match"
+        )
+        potential = sum(
+            1
+            for rc in ranked_candidates
+            if rc.candidate_score.recommendation == "Potential Match"
+        )
+        not_rec = sum(
+            1
+            for rc in ranked_candidates
+            if rc.candidate_score.recommendation == "Not Recommended"
+        )
 
         return f"""## Executive Summary
 
@@ -146,8 +160,7 @@ class ReportGenerator:
 """
 
     def _generate_top_candidates_section(
-        self,
-        top_candidates: list[RankedCandidate]
+        self, top_candidates: list[RankedCandidate]
     ) -> str:
         """Generate top candidates comparison"""
 
@@ -159,7 +172,9 @@ class ReportGenerator:
 
         for rc in top_candidates:
             cs = rc.candidate_score
-            section += f"| #{rc.rank} | **{cs.candidate_name}** | {cs.total_score:.1f}% | "
+            section += (
+                f"| #{rc.rank} | **{cs.candidate_name}** | {cs.total_score:.1f}% | "
+            )
             section += f"{cs.skill_score.overall_skill_score:.1f}% | "
             section += f"{cs.experience_score.experience_match_score:.1f}% | "
             section += f"{cs.education_score.education_score:.1f}% | "
@@ -170,8 +185,7 @@ class ReportGenerator:
         return section
 
     def _generate_detailed_profiles(
-        self,
-        ranked_candidates: list[RankedCandidate]
+        self, ranked_candidates: list[RankedCandidate]
     ) -> str:
         """Generate detailed candidate profiles"""
 
@@ -188,7 +202,7 @@ class ReportGenerator:
                 "Strong Match": "🟢",
                 "Good Match": "🟡",
                 "Potential Match": "🟠",
-                "Not Recommended": "🔴"
+                "Not Recommended": "🔴",
             }
             emoji = badge_emoji.get(cs.recommendation, "⚪")
 
@@ -202,7 +216,9 @@ class ReportGenerator:
             section += f"#### Score Breakdown (Total: {cs.total_score:.1f}%)\n\n"
             section += f"- **Skills:** {cs.skill_score.overall_skill_score:.1f}% "
             section += f"(weighted: {cs.weighted_skill_score:.1f})\n"
-            section += f"- **Experience:** {cs.experience_score.experience_match_score:.1f}% "
+            section += (
+                f"- **Experience:** {cs.experience_score.experience_match_score:.1f}% "
+            )
             section += f"(weighted: {cs.weighted_experience_score:.1f})\n"
             section += f"- **Education:** {cs.education_score.education_score:.1f}% "
             section += f"(weighted: {cs.weighted_education_score:.1f})\n\n"
@@ -243,9 +259,13 @@ class ReportGenerator:
             # Experience details
             section += "<details>\n"
             section += "<summary><b>Detailed Experience Analysis</b></summary>\n\n"
-            section += f"**Total Experience:** {cs.experience_score.total_years} years\n\n"
+            section += (
+                f"**Total Experience:** {cs.experience_score.total_years} years\n\n"
+            )
             section += f"**Relevant Experience:** {cs.experience_score.relevant_years} years\n\n"
-            section += f"**Career Trajectory:** {cs.experience_score.career_trajectory}\n\n"
+            section += (
+                f"**Career Trajectory:** {cs.experience_score.career_trajectory}\n\n"
+            )
             section += f"**Domain Match:** {'Yes' if cs.experience_score.domain_match else 'No'}\n\n"
             section += f"{cs.experience_score.experience_analysis}\n"
             section += "</details>\n\n"
@@ -271,17 +291,23 @@ class ReportGenerator:
         return section
 
     def _generate_recommendations(
-        self,
-        job_req: JobRequirements,
-        ranked_candidates: list[RankedCandidate]
+        self, job_req: JobRequirements, ranked_candidates: list[RankedCandidate]
     ) -> str:
         """Generate hiring recommendations"""
 
         section = "## Hiring Recommendations\n\n"
 
         # Get top candidates
-        strong_matches = [rc for rc in ranked_candidates if rc.candidate_score.recommendation == "Strong Match"]
-        good_matches = [rc for rc in ranked_candidates if rc.candidate_score.recommendation == "Good Match"]
+        strong_matches = [
+            rc
+            for rc in ranked_candidates
+            if rc.candidate_score.recommendation == "Strong Match"
+        ]
+        good_matches = [
+            rc
+            for rc in ranked_candidates
+            if rc.candidate_score.recommendation == "Good Match"
+        ]
 
         if strong_matches:
             section += "### Recommended for Immediate Interview\n\n"
@@ -315,7 +341,7 @@ class ReportGenerator:
 
 **Generated by:** Resume Screening AI Agent
 **Date:** {datetime.now().strftime("%B %d, %Y")}
-**Scoring Weights:** Skills ({settings.SKILL_WEIGHT*100}%) | Experience ({settings.EXPERIENCE_WEIGHT*100}%) | Education ({settings.EDUCATION_WEIGHT*100}%)
+**Scoring Weights:** Skills ({settings.SKILL_WEIGHT * 100}%) | Experience ({settings.EXPERIENCE_WEIGHT * 100}%) | Education ({settings.EDUCATION_WEIGHT * 100}%)
 
 *This report was generated using AI-powered analysis. Final hiring decisions should be made by qualified human recruiters.*
 """
@@ -330,14 +356,10 @@ def report_generator_node(state: dict) -> dict:
     generator = ReportGenerator()
 
     report = generator.generate_report(
-        state["job_requirements"],
-        state["ranked_candidates"]
+        state["job_requirements"], state["ranked_candidates"]
     )
 
-    return {
-        "report": report,
-        "current_step": "report_generation_complete"
-    }
+    return {"report": report, "current_step": "report_generation_complete"}
 
 
 # Test independently

@@ -4,6 +4,7 @@ Tool Coordinator Node
 LLM-powered coordinator that intelligently decides which tools to use for each candidate.
 This is the "brain" of the agentic system.
 """
+
 import json
 
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -25,11 +26,7 @@ class ToolCoordinator:
     def __init__(self):
         self.llm = GroqLLM().get_llm_model()
 
-    def create_tool_plan(
-        self,
-        candidates: list[dict],
-        job_requirements: dict
-    ) -> dict:
+    def create_tool_plan(self, candidates: list[dict], job_requirements: dict) -> dict:
         """
         Create a tool execution plan for all candidates
 
@@ -67,9 +64,7 @@ class ToolCoordinator:
         return tool_plan
 
     def _decide_tools_for_candidate(
-        self,
-        candidate: dict,
-        job_requirements: dict
+        self, candidate: dict, job_requirements: dict
     ) -> dict:
         """
         Use LLM to decide which tools to use for a specific candidate
@@ -101,8 +96,10 @@ class ToolCoordinator:
 
         try:
             messages = [
-                SystemMessage(content="You are an intelligent hiring coordinator making strategic tool selection decisions."),
-                HumanMessage(content=prompt)
+                SystemMessage(
+                    content="You are an intelligent hiring coordinator making strategic tool selection decisions."
+                ),
+                HumanMessage(content=prompt),
             ]
 
             response = self.llm.invoke(messages)
@@ -127,7 +124,7 @@ class ToolCoordinator:
             return {
                 "tools": ["skill_taxonomy"],
                 "reasoning": "Using default tool set due to planning error",
-                "priority": "medium"
+                "priority": "medium",
             }
 
     def _format_candidate_summary(self, candidate: dict) -> str:
@@ -137,31 +134,35 @@ class ToolCoordinator:
 
         # Basic info
         summary.append(f"Name: {candidate.get('name', 'Unknown')}")
-        summary.append(f"Experience: {candidate.get('total_experience_months', 0) / 12:.1f} years")
+        summary.append(
+            f"Experience: {candidate.get('total_experience_months', 0) / 12:.1f} years"
+        )
 
         # Skills
-        skills = candidate.get('technical_skills', [])
+        skills = candidate.get("technical_skills", [])
         if skills:
             summary.append(f"Skills: {', '.join(skills[:10])}")
 
         # Work history
-        work_exp = candidate.get('work_experience', [])
+        work_exp = candidate.get("work_experience", [])
         if work_exp:
-            companies = [exp.get('company', 'Unknown') for exp in work_exp[:3]]
+            companies = [exp.get("company", "Unknown") for exp in work_exp[:3]]
             summary.append(f"Recent Companies: {', '.join(companies)}")
 
         # GitHub
-        github_url = candidate.get('github_url')
+        github_url = candidate.get("github_url")
         if github_url:
             summary.append(f"GitHub: {github_url}")
         else:
             summary.append("GitHub: Not provided")
 
         # Education
-        education = candidate.get('education', [])
+        education = candidate.get("education", [])
         if education:
             edu = education[0]
-            summary.append(f"Education: {edu.get('degree', 'Unknown')} from {edu.get('institution', 'Unknown')}")
+            summary.append(
+                f"Education: {edu.get('degree', 'Unknown')} from {edu.get('institution', 'Unknown')}"
+            )
 
         return "\n".join(summary)
 
@@ -174,9 +175,9 @@ def tool_coordinator_node(state: dict) -> dict:
     which tools to use for each candidate rather than blindly
     running all tools for everyone.
     """
-    print("="*80)
+    print("=" * 80)
     print(" TOOL COORDINATOR - AGENTIC DECISION MAKING")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     coordinator = ToolCoordinator()
 
@@ -185,10 +186,7 @@ def tool_coordinator_node(state: dict) -> dict:
 
     tool_plan = coordinator.create_tool_plan(candidates, job_requirements)
 
-    return {
-        "tool_plan": tool_plan,
-        "current_step": "tool_coordination_complete"
-    }
+    return {"tool_plan": tool_plan, "current_step": "tool_coordination_complete"}
 
 
 # Test
@@ -208,7 +206,7 @@ if __name__ == "__main__":
             github_url="github.com/alice",
             total_experience_months=60,
             work_experience=[],
-            education=[]
+            education=[],
         ).model_dump(),
         Candidate(
             name="Bob Manager",
@@ -216,8 +214,8 @@ if __name__ == "__main__":
             github_url=None,
             total_experience_months=120,
             work_experience=[],
-            education=[]
-        ).model_dump()
+            education=[],
+        ).model_dump(),
     ]
 
     job = JobRequirements(
@@ -225,15 +223,15 @@ if __name__ == "__main__":
         job_description="Build ML systems",
         technical_skills=[],
         experience=ExperienceRequirement(minimum_years=5),
-        education=EducationRequirement(minimum_degree="Bachelor")
+        education=EducationRequirement(minimum_degree="Bachelor"),
     ).model_dump()
 
     coordinator = ToolCoordinator()
     plan = coordinator.create_tool_plan(candidates, job)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("TOOL PLAN RESULT")
-    print("="*80)
+    print("=" * 80)
     for candidate_name, candidate_plan in plan.items():
         print(f"\n{candidate_name}:")
         print(f"  Tools: {candidate_plan['tools']}")

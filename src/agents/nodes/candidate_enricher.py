@@ -5,7 +5,6 @@ Executes the tool plan by running selected tools for each candidate.
 Enriches candidate profiles with additional data.
 """
 
-
 from src.tools import GitHubAnalyzer, SkillTaxonomy, WebSearchTool
 
 
@@ -21,17 +20,9 @@ class CandidateEnricher:
         self.github_analyzer = GitHubAnalyzer()
         self.skill_taxonomy = SkillTaxonomy()
 
-        self.enrichment_cache = {
-            "companies": {},
-            "github": {},
-            "skills": {}
-        }
+        self.enrichment_cache = {"companies": {}, "github": {}, "skills": {}}
 
-    def enrich_candidates(
-        self,
-        candidates: list[dict],
-        tool_plan: dict
-    ) -> dict:
+    def enrich_candidates(self, candidates: list[dict], tool_plan: dict) -> dict:
         """
         Enrich all candidates based on tool plan
 
@@ -92,7 +83,7 @@ class CandidateEnricher:
         return {
             "company_verifications": company_verifications,
             "github_analyses": github_analyses,
-            "skill_taxonomy_data": skill_taxonomy_data
+            "skill_taxonomy_data": skill_taxonomy_data,
         }
 
     def _run_web_search(self, candidate: dict) -> dict:
@@ -111,7 +102,9 @@ class CandidateEnricher:
 
             # Check cache
             if company_name in self.enrichment_cache["companies"]:
-                company_data[company_name] = self.enrichment_cache["companies"][company_name]
+                company_data[company_name] = self.enrichment_cache["companies"][
+                    company_name
+                ]
                 continue
 
             # Search
@@ -166,21 +159,17 @@ def candidate_enricher_node(state: dict) -> dict:
 
     Executes the tool plan created by the coordinator.
     """
-    print("="*80)
+    print("=" * 80)
     print("CANDIDATE ENRICHER - EXECUTING TOOLS")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     enricher = CandidateEnricher()
 
     enrichment_data = enricher.enrich_candidates(
-        state["candidates"],
-        state.get("tool_plan", {})
+        state["candidates"], state.get("tool_plan", {})
     )
 
-    return {
-        **enrichment_data,
-        "current_step": "enrichment_complete"
-    }
+    return {**enrichment_data, "current_step": "enrichment_complete"}
 
 
 # Test
@@ -193,16 +182,14 @@ if __name__ == "__main__":
             "name": "Alice",
             "technical_skills": ["Python", "TensorFlow"],
             "github_url": "gvanrossum",
-            "work_experience": [
-                {"company": "Google"}
-            ]
+            "work_experience": [{"company": "Google"}],
         }
     ]
 
     tool_plan = {
         "Alice": {
             "tools": ["web_search", "github", "skill_taxonomy"],
-            "priority": "high"
+            "priority": "high",
         }
     }
 

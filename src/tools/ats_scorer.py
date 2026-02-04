@@ -21,20 +21,24 @@ class ATSScorer:
 
     def __init__(self):
         self.required_sections = [
-            "experience", "education", "skills",
-            "work", "employment", "technical"
+            "experience",
+            "education",
+            "skills",
+            "work",
+            "employment",
+            "technical",
         ]
 
         self.bonus_sections = [
-            "summary", "objective", "projects",
-            "certifications", "achievements"
+            "summary",
+            "objective",
+            "projects",
+            "certifications",
+            "achievements",
         ]
 
     def score_resume(
-        self,
-        resume_text: str,
-        candidate_profile: dict,
-        job_requirements: dict
+        self, resume_text: str, candidate_profile: dict, job_requirements: dict
     ) -> dict:
         """
         Score resume for ATS compatibility
@@ -54,7 +58,9 @@ class ATSScorer:
                 "ats_readiness": str  # "Excellent", "Good", "Fair", "Poor"
             }
         """
-        print(f"    📋 Scoring ATS compatibility for {candidate_profile.get('name', 'candidate')}...")
+        print(
+            f"    📋 Scoring ATS compatibility for {candidate_profile.get('name', 'candidate')}..."
+        )
 
         scores = {}
         strengths = []
@@ -62,9 +68,7 @@ class ATSScorer:
 
         # 1. Keyword Optimization (30 points)
         keyword_score = self._score_keywords(
-            resume_text,
-            candidate_profile,
-            job_requirements
+            resume_text, candidate_profile, job_requirements
         )
         scores["keyword_optimization"] = keyword_score
 
@@ -80,7 +84,9 @@ class ATSScorer:
         if format_score >= 20:
             strengths.append("Clean, ATS-friendly format")
         else:
-            improvements.append("Simplify formatting - avoid tables, images, and complex layouts")
+            improvements.append(
+                "Simplify formatting - avoid tables, images, and complex layouts"
+            )
 
         # 3. Section Organization (20 points)
         section_score = self._score_sections(resume_text)
@@ -89,7 +95,9 @@ class ATSScorer:
         if section_score >= 16:
             strengths.append("Well-organized with clear sections")
         else:
-            improvements.append("Add clear section headers (Experience, Education, Skills)")
+            improvements.append(
+                "Add clear section headers (Experience, Education, Skills)"
+            )
 
         # 4. Contact Information (15 points)
         contact_score = self._score_contact_info(candidate_profile)
@@ -107,7 +115,9 @@ class ATSScorer:
         if density_score >= 8:
             strengths.append("Appropriate content density")
         elif density_score < 5:
-            improvements.append("Resume may be too sparse - add more detail about accomplishments")
+            improvements.append(
+                "Resume may be too sparse - add more detail about accomplishments"
+            )
 
         # Calculate overall score
         overall_score = sum(scores.values())
@@ -127,14 +137,11 @@ class ATSScorer:
             "category_scores": {k: round(v, 1) for k, v in scores.items()},
             "strengths": strengths,
             "improvements": improvements,
-            "ats_readiness": readiness
+            "ats_readiness": readiness,
         }
 
     def _score_keywords(
-        self,
-        resume_text: str,
-        candidate_profile: dict,
-        job_requirements: dict
+        self, resume_text: str, candidate_profile: dict, job_requirements: dict
     ) -> float:
         """
         Score keyword optimization (max 30 points)
@@ -189,17 +196,19 @@ class ATSScorer:
         # (Note: We're working with extracted text, so some checks are limited)
 
         # Check for excessive special characters (indicates complex formatting)
-        special_char_ratio = len(re.findall(r'[^\w\s.,;:()\-]', resume_text)) / len(resume_text)
+        special_char_ratio = len(re.findall(r"[^\w\s.,;:()\-]", resume_text)) / len(
+            resume_text
+        )
         if special_char_ratio > 0.05:
             score -= 5
 
         # Check for proper line breaks (indicates structure)
-        lines = resume_text.split('\n')
+        lines = resume_text.split("\n")
         if len(lines) < 20:  # Too few lines might indicate poor structure
             score -= 5
 
         # Check for bullet points (good for ATS)
-        bullet_indicators = ['•', '●', '◦', '-', '*']
+        bullet_indicators = ["•", "●", "◦", "-", "*"]
         has_bullets = any(indicator in resume_text for indicator in bullet_indicators)
         if not has_bullets:
             score -= 3
@@ -255,7 +264,9 @@ class ATSScorer:
 
         return score
 
-    def _score_content_density(self, resume_text: str, candidate_profile: dict) -> float:
+    def _score_content_density(
+        self, resume_text: str, candidate_profile: dict
+    ) -> float:
         """
         Score content density (max 10 points)
 
@@ -277,10 +288,11 @@ class ATSScorer:
         work_exp = candidate_profile.get("work_experience", [])
         if work_exp:
             total_responsibilities = sum(
-                len(exp.get("responsibilities", []))
-                for exp in work_exp
+                len(exp.get("responsibilities", [])) for exp in work_exp
             )
-            if total_responsibilities < len(work_exp) * 2:  # At least 2 responsibilities per job
+            if (
+                total_responsibilities < len(work_exp) * 2
+            ):  # At least 2 responsibilities per job
                 score -= 3
 
         return max(0, score)
@@ -323,9 +335,13 @@ if __name__ == "__main__":
         "work_experience": [
             {
                 "company": "Tech Corp",
-                "responsibilities": ["Built systems", "Deployed models", "Mentored engineers"]
+                "responsibilities": [
+                    "Built systems",
+                    "Deployed models",
+                    "Mentored engineers",
+                ],
             }
-        ]
+        ],
     }
 
     job = {
@@ -333,28 +349,28 @@ if __name__ == "__main__":
             {"name": "Python"},
             {"name": "TensorFlow"},
             {"name": "AWS"},
-            {"name": "Docker"}
+            {"name": "Docker"},
         ]
     }
 
     result = scorer.score_resume(resume_text, candidate, job)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("📋 ATS COMPATIBILITY SCORE")
-    print("="*80)
+    print("=" * 80)
     print(f"\nOverall Score: {result['overall_score']:.1f}/100")
     print(f"ATS Readiness: {result['ats_readiness']}")
 
     print("\nCategory Scores:")
-    for category, score in result['category_scores'].items():
+    for category, score in result["category_scores"].items():
         print(f"  {category.replace('_', ' ').title()}: {score:.1f}")
 
     print("\n✅ Strengths:")
-    for strength in result['strengths']:
+    for strength in result["strengths"]:
         print("  • {strength}")
 
     print("\n⚠️ Improvements:")
-    for improvement in result['improvements']:
+    for improvement in result["improvements"]:
         print(f"  • {improvement}")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
