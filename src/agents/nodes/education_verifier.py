@@ -104,7 +104,6 @@ class EducationVerifier:
             ]
 
             response = self.llm.invoke(messages)
-
             # Parse JSON
             import json
             response_text = response.content.strip()
@@ -117,7 +116,7 @@ class EducationVerifier:
             return result
 
         except Exception as e:
-            print(f"    ⚠️  LLM education verification failed: {e}")
+            print(f"LLM education verification failed: {e}")
             # Fallback: simple verification
             return self._simple_verification(candidate, job_requirements)
 
@@ -232,7 +231,7 @@ def education_verifier_node(state: dict) -> dict:
               f"({education_score.highest_degree or 'No degree'}, "
               f"field match: {education_score.field_match})")
 
-    print(f"✅ Education verification complete for {len(education_scores)} candidates\n")
+    print(f"Education verification complete for {len(education_scores)} candidates\n")
 
     return {
         "education_scores": education_scores,
@@ -296,7 +295,7 @@ if __name__ == "__main__":
     score = verifier.verify_education(candidate, job)
 
     print("\n" + "="*80)
-    print("✅ EDUCATION VERIFICATION RESULT")
+    print("EDUCATION VERIFICATION RESULT")
     print("="*80)
     print(f"\nCandidate: {candidate.name}")
     print(f"Education Score: {score.education_score}%")

@@ -34,7 +34,7 @@ class SkillMatcher:
         Returns:
             SkillScore with AI-powered analysis
         """
-        print(f"  🤖 AI analyzing skills for {candidate.name}...")
+        print(f" AI analyzing skills for {candidate.name}...")
 
         # Prepare data for the prompt template
         must_have_skills_list = [
@@ -98,7 +98,7 @@ class SkillMatcher:
             )
 
         except Exception as e:
-            print(f"  ⚠️  Error parsing LLM response: {e}")
+            print(f"  Error parsing LLM response: {e}")
             print(f"  Response was: {response.content[:200]}...")
             # Fallback to basic matching
             return self._fallback_matching(candidate, job_requirements)
@@ -120,7 +120,7 @@ class SkillMatcher:
         job_requirements: JobRequirements
     ) -> SkillScore:
         """Fallback to basic rule-based matching if LLM fails"""
-        print(f"  ⚠️  Using fallback matching for {candidate.name}")
+        print(f"  Using fallback matching for {candidate.name}")
 
         candidate_skills_set = set(skill.lower() for skill in candidate.all_skills)
         must_have_skills = job_requirements.must_have_skills
@@ -157,7 +157,7 @@ def skill_matcher_node(state: dict) -> dict:
     """
     LangGraph node: AI-powered skill matching for all candidates
     """
-    print("🎯 AI-powered skill matching in progress...")
+    print(" AI-powered skill matching in progress...")
 
     matcher = SkillMatcher()
 
@@ -171,10 +171,10 @@ def skill_matcher_node(state: dict) -> dict:
         skill_score = matcher.match_skills(candidate, job_req)
         skill_scores.append(skill_score.model_dump())
 
-        print(f"  ✅ {candidate.name}: {skill_score.overall_skill_score:.1f}% match "
+        print(f" {candidate.name}: {skill_score.overall_skill_score:.1f}% match "
               f"({len(skill_score.matched_must_have)}/{len(job_req.must_have_skills)} must-haves)")
 
-    print("✅ Skill matching complete!\n")
+    print(" Skill matching complete!\n")
 
     return {
         "skill_scores": skill_scores,
@@ -213,7 +213,7 @@ if __name__ == "__main__":
     score = matcher.match_skills(candidate, job)
 
     print("\n" + "="*60)
-    print("✅ AI-Powered Skill Match Result:")
+    print(" AI-Powered Skill Match Result:")
     print("="*60)
     print(f"Overall Score: {score.overall_skill_score}%")
     print(f"Must-Have Match: {score.must_have_match_percentage}%")

@@ -39,7 +39,7 @@ class ExperienceAnalyzer:
         Returns:
             ExperienceScore with detailed analysis
         """
-        print(f"  📊 Analyzing experience for {candidate.name}...")
+        print(f" Analyzing experience for {candidate.name}...")
 
         # Basic metrics
         total_years = candidate.total_experience_years
@@ -137,7 +137,7 @@ class ExperienceAnalyzer:
             return analysis
 
         except Exception as e:
-            print(f"    ⚠️  LLM relevance analysis failed: {e}")
+            print(f" LLM relevance analysis failed: {e}")
             # Fallback: assume all experience is relevant
             return {
                 "relevant_years": candidate.total_experience_years,
@@ -196,7 +196,7 @@ class ExperienceAnalyzer:
             return analysis
 
         except Exception as e:
-            print(f"    ⚠️  LLM progression analysis failed: {e}")
+            print(f" LLM progression analysis failed: {e}")
             return {
                 "has_progression": False,
                 "trajectory": "unknown",
@@ -301,7 +301,7 @@ class ExperienceAnalyzer:
             return response.content.strip()
 
         except Exception as e:
-            print(f"    ⚠️  LLM comprehensive analysis failed: {e}")
+            print(f" LLM comprehensive analysis failed: {e}")
             # Fallback to basic analysis
             return self._generate_basic_analysis(
                 candidate.name,
@@ -367,9 +367,9 @@ class ExperienceAnalyzer:
         analysis = f"Experience Assessment for {name}:\n\n"
 
         if total_years >= required_years:
-            analysis += f"✅ Meets experience requirement with {total_years} years (required: {required_years}+).\n"
+            analysis += f"Meets experience requirement with {total_years} years (required: {required_years}+).\n"
         else:
-            analysis += f"⚠️ Below experience requirement: {total_years} years (required: {required_years}+).\n"
+            analysis += f"Below experience requirement: {total_years} years (required: {required_years}+).\n"
 
         relevant_years = relevance_analysis.get("relevant_years", total_years)
         analysis += f"Relevant experience: ~{relevant_years} years.\n"
@@ -384,7 +384,7 @@ def experience_analyzer_node(state: dict) -> dict:
     """
     LangGraph node: Analyze experience for all candidates
     """
-    print("💼 Analyzing work experience...")
+    print("Analyzing work experience...")
 
     analyzer = ExperienceAnalyzer()
 
@@ -399,11 +399,11 @@ def experience_analyzer_node(state: dict) -> dict:
         experience_score = analyzer.analyze_experience(candidate, job_req)
         experience_scores.append(experience_score.model_dump())
 
-        print(f"  ✅ {candidate.name}: {experience_score.experience_match_score:.1f}% "
+        print(f" {candidate.name}: {experience_score.experience_match_score:.1f}% "
               f"({experience_score.relevant_years}/{experience_score.required_years} years, "
               f"{experience_score.career_trajectory} trajectory)")
 
-    print(f"✅ Experience analysis complete for {len(experience_scores)} candidates\n")
+    print(f"Experience analysis complete for {len(experience_scores)} candidates\n")
 
     return {
         "experience_scores": experience_scores,
@@ -474,7 +474,7 @@ if __name__ == "__main__":
     score = analyzer.analyze_experience(candidate, job)
 
     print("\n" + "="*80)
-    print("✅ EXPERIENCE ANALYSIS RESULT")
+    print("EXPERIENCE ANALYSIS RESULT")
     print("="*80)
     print(f"\nCandidate: {candidate.name}")
     print(f"Experience Score: {score.experience_match_score}%")

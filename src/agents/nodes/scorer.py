@@ -50,7 +50,7 @@ class CandidateScorer:
         Returns:
             List of RankedCandidate objects (sorted by score)
         """
-        print("🏆 Scoring and ranking candidates...")
+        print("Scoring and ranking candidates...")
 
         # Convert dicts to models
         job_req = JobRequirements(**job_requirements)
@@ -270,7 +270,7 @@ class CandidateScorer:
             return analysis
 
         except Exception as e:
-            print(f"    ⚠️  LLM holistic analysis failed: {e}")
+            print(f" LLM holistic analysis failed: {e}")
             # Fallback
             return {
                 "strengths": [f"Overall score: {total_score:.1f}%"],
@@ -333,7 +333,7 @@ class CandidateScorer:
             return response.content.strip()
 
         except Exception as e:
-            print(f"    ⚠️  Comparative analysis failed: {e}")
+            print(f" Comparative analysis failed: {e}")
             return ""
 
 
@@ -341,7 +341,7 @@ def scorer_node(state: dict) -> dict:
     """
     LangGraph node: Score and rank all candidates
     """
-    print("🏆 Scoring and ranking candidates...")
+    print(" Scoring and ranking candidates...")
 
     scorer = CandidateScorer()
 
@@ -357,7 +357,7 @@ def scorer_node(state: dict) -> dict:
     candidate_scores = [rc.candidate_score.model_dump() for rc in ranked_candidates]
     ranked_dicts = [rc.model_dump() for rc in ranked_candidates]
 
-    print(f"✅ Scoring complete. Top candidate: {ranked_candidates[0].candidate_score.candidate_name} "
+    print(f" Scoring complete. Top candidate: {ranked_candidates[0].candidate_score.candidate_name} "
           f"({ranked_candidates[0].candidate_score.total_score:.1f}%)\n")
 
     return {
@@ -442,7 +442,7 @@ if __name__ == "__main__":
     )
 
     print("\n" + "="*80)
-    print("✅ CANDIDATE SCORE RESULT")
+    print(" CANDIDATE SCORE RESULT")
     print("="*80)
     print(f"\nCandidate: {candidate_score.candidate_name}")
     print(f"Total Score: {candidate_score.total_score:.1f}%")
@@ -455,13 +455,13 @@ if __name__ == "__main__":
     print("STRENGTHS:")
     print("="*80)
     for strength in candidate_score.strengths:
-        print(f"  ✅ {strength}")
+        print(f" {strength}")
     print(f"\n{'='*80}")
     print("CONCERNS:")
     print("="*80)
     if candidate_score.concerns:
         for concern in candidate_score.concerns:
-            print(f"  ⚠️  {concern}")
+            print(f"  {concern}")
     else:
         print("  None")
     print(f"\n{'='*80}")

@@ -29,13 +29,13 @@ class ResumeParser:
         Returns:
             Candidate object with parsed information
         """
-        print(f"  📄 Parsing resume: {filename}")
+        print(f" Parsing resume: {filename}")
 
         # Step 1: Extract text from PDF
         resume_text = self.pdf_extractor.extract_text(resume_bytes)
 
         if not resume_text or len(resume_text) < 100:
-            print(f"  ⚠️  Warning: Very little text extracted from {filename}")
+            print(f" Warning: Very little text extracted from {filename}")
             return self._create_empty_candidate(filename)
 
         # Step 2: Use text processor to extract basic info (as a helper)
@@ -62,7 +62,7 @@ class ResumeParser:
         # Step 5: Convert to Candidate model
         candidate = self._convert_to_model(candidate_data, filename)
 
-        print(f"  ✅ Parsed: {candidate.name} - {len(candidate.technical_skills)} skills found")
+        print(f" Parsed: {candidate.name} - {len(candidate.technical_skills)} skills found")
         return candidate
 
     def _llm_parse(self, resume_text: str) -> dict:
@@ -89,7 +89,7 @@ class ResumeParser:
             return candidate_data
 
         except json.JSONDecodeError as e:
-            print(f"  ⚠️  Error parsing LLM response: {e}")
+            print(f" Error parsing LLM response: {e}")
             return {}
 
     def _convert_to_model(self, candidate_data: dict, filename: str) -> Candidate:
@@ -212,7 +212,7 @@ def resume_parser_node(state: dict) -> dict:
     This node processes multiple resumes in parallel (conceptually)
     and returns all parsed candidates.
     """
-    print("📚 Parsing resumes...")
+    print(" Parsing resumes...")
 
     parser = ResumeParser()
     candidates = []
@@ -225,12 +225,12 @@ def resume_parser_node(state: dict) -> dict:
             candidate = parser.parse_resume(resume_bytes, filename)
             candidates.append(candidate.model_dump())
         except Exception as e:
-            print(f"  ❌ Error parsing {filename}: {e}")
+            print(f" Error parsing {filename}: {e}")
             # Add empty candidate so we don't lose track
             empty = parser._create_empty_candidate(filename)
             candidates.append(empty.model_dump())
 
-    print(f"✅ Parsed {len(candidates)} resumes")
+    print(f"Parsed {len(candidates)} resumes")
 
     return {
         "candidates": candidates,

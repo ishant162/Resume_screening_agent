@@ -32,7 +32,7 @@ class ReportGenerator:
         Returns:
             Markdown formatted report
         """
-        print("📊 Generating comprehensive report...")
+        print("Generating comprehensive report...")
 
         job_req = JobRequirements(**job_requirements)
         ranked = [RankedCandidate(**rc) for rc in ranked_candidates]
@@ -63,7 +63,7 @@ class ReportGenerator:
 
         full_report = "\n\n".join(report_sections)
 
-        print("✅ Report generated successfully")
+        print("Report generated successfully")
         return full_report
 
     def _generate_executive_summary(
@@ -101,7 +101,7 @@ class ReportGenerator:
             return response.content.strip()
 
         except Exception as e:
-            print(f"  ⚠️  Executive summary generation failed: {e}")
+            print(f"Executive summary generation failed: {e}")
             return f"Screened {len(ranked_candidates)} candidates for the {job_requirements.job_title} position. Top candidate scored {ranked_candidates[0].candidate_score.total_score:.1f}%."
 
     def _generate_header(self, job_req: JobRequirements) -> str:
@@ -196,7 +196,7 @@ class ReportGenerator:
 
             # Contact info
             if cs.candidate_email:
-                section += f"📧 {cs.candidate_email}\n\n"
+                section += f"{cs.candidate_email}\n\n"
 
             # Score breakdown
             section += f"#### Score Breakdown (Total: {cs.total_score:.1f}%)\n\n"
@@ -208,27 +208,27 @@ class ReportGenerator:
             section += f"(weighted: {cs.weighted_education_score:.1f})\n\n"
 
             # Strengths
-            section += "#### ✅ Key Strengths\n\n"
+            section += "#### Key Strengths\n\n"
             for strength in cs.strengths:
                 section += f"- {strength}\n"
             section += "\n"
 
             # Concerns
             if cs.concerns:
-                section += "#### ⚠️ Areas of Concern\n\n"
+                section += "#### Areas of Concern\n\n"
                 for concern in cs.concerns:
                     section += f"- {concern}\n"
                 section += "\n"
 
             # Red flags
             if cs.red_flags:
-                section += "#### 🚩 Red Flags\n\n"
+                section += "#### Red Flags\n\n"
                 for flag in cs.red_flags:
                     section += f"- {flag}\n"
                 section += "\n"
 
             # Detailed analysis
-            section += "#### 📋 Comprehensive Analysis\n\n"
+            section += "#### Comprehensive Analysis\n\n"
             section += f"{cs.detailed_analysis}\n\n"
 
             # Skill details
@@ -263,7 +263,7 @@ class ReportGenerator:
 
             # Comparative analysis (if available)
             if rc.comparison_notes:
-                section += "#### 📊 Ranking Context\n\n"
+                section += "#### Ranking Context\n\n"
                 section += f"{rc.comparison_notes}\n\n"
 
             section += "---\n\n"
@@ -284,18 +284,18 @@ class ReportGenerator:
         good_matches = [rc for rc in ranked_candidates if rc.candidate_score.recommendation == "Good Match"]
 
         if strong_matches:
-            section += "### 🎯 Recommended for Immediate Interview\n\n"
+            section += "### Recommended for Immediate Interview\n\n"
             for rc in strong_matches[:3]:
                 section += f"- **{rc.candidate_score.candidate_name}** (Score: {rc.candidate_score.total_score:.1f}%)\n"
             section += "\n"
 
         if good_matches:
-            section += "### 💼 Recommended for Phone Screen\n\n"
+            section += "### Recommended for Phone Screen\n\n"
             for rc in good_matches[:3]:
                 section += f"- **{rc.candidate_score.candidate_name}** (Score: {rc.candidate_score.total_score:.1f}%)\n"
             section += "\n"
 
-        section += "### 📝 Next Steps\n\n"
+        section += "### Next Steps\n\n"
         section += "1. Review top candidates' detailed profiles above\n"
         section += "2. Review interview questions (see next section)\n"
         section += "3. Schedule interviews with recommended candidates\n"
@@ -325,7 +325,7 @@ def report_generator_node(state: dict) -> dict:
     """
     LangGraph node: Generate comprehensive report
     """
-    print("📊 Generating comprehensive screening report...")
+    print("Generating comprehensive screening report...")
 
     generator = ReportGenerator()
 

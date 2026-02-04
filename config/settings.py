@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # API Keys
-    GEN_ENG_API_KEY: str
+    GEN_ENG_API_KEY: str | None = None
     GROQ_API: str | None = None
 
     # Model settings

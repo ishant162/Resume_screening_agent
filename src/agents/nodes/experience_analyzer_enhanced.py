@@ -108,7 +108,7 @@ class EnhancedExperienceAnalyzer:
             return analysis
 
         except Exception as e:
-            print(f"    ⚠️  Enhanced experience analysis failed: {e}")
+            print(f"Enhanced experience analysis failed: {e}")
             return {
                 "relevant_years": candidate.total_experience_years,
                 "domain_match": False,
@@ -240,10 +240,10 @@ def experience_analyzer_enhanced_node(state: dict) -> dict:
         )
         experience_scores.append(experience_score.model_dump())
 
-        print(f"  ✅ {candidate.name}: {experience_score.experience_match_score:.1f}% "
+        print(f" {candidate.name}: {experience_score.experience_match_score:.1f}% "
               f"({experience_score.relevant_years:.1f}/{experience_score.required_years} years)")
 
-    print("✅ Enhanced experience analysis complete\n")
+    print("Enhanced experience analysis complete\n")
 
     return {
         "experience_scores": experience_scores,

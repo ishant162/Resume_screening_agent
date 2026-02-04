@@ -57,7 +57,7 @@ class QualityChecker:
                 "candidates_to_reanalyze": List[str]
             }
         """
-        print("✅ Quality Checker: Agent reviewing its own work...\n")
+        print("Quality Checker: Agent reviewing its own work...\n")
 
         issues = []
         recommendations = []
@@ -109,14 +109,14 @@ class QualityChecker:
         print(f"  Issues Found: {len(issues)}")
 
         if issues:
-            print("  ⚠️  Issues:")
+            print("Issues:")
             for issue in issues[:3]:
                 print(f"    - {issue}")
 
         if needs_reanalysis:
-            print(f"  🔄 Re-analysis needed for: {', '.join(candidates_to_reanalyze)}")
+            print(f"Re-analysis needed for: {', '.join(candidates_to_reanalyze)}")
         else:
-            print("  ✅ Analysis quality acceptable")
+            print(" Analysis quality acceptable")
 
         print()
 
@@ -263,7 +263,7 @@ class QualityChecker:
             return reflection
 
         except Exception as e:
-            print(f"    ⚠️  Self-reflection failed: {e}")
+            print(f"Self-reflection failed: {e}")
             return {
                 "overall_confidence": 0.7,
                 "issues": [],
@@ -306,7 +306,7 @@ def quality_checker_node(state: dict) -> dict:
     This enables the agent to review its own work and request re-analysis!
     """
     print("="*80)
-    print("✅ QUALITY CHECKER - SELF-REFLECTION")
+    print("QUALITY CHECKER - SELF-REFLECTION")
     print("="*80 + "\n")
 
     checker = QualityChecker()

@@ -15,7 +15,7 @@ def bias_detector_node(state: dict) -> dict:
     Ensures fair and ethical hiring practices.
     """
     print("="*80)
-    print("⚖️  BIAS DETECTOR - FAIRNESS ANALYSIS")
+    print("BIAS DETECTOR - FAIRNESS ANALYSIS")
     print("="*80 + "\n")
 
     detector = BiasDetector()
@@ -31,11 +31,11 @@ def bias_detector_node(state: dict) -> dict:
     print(f"Fairness Assessment: {bias_analysis['fairness_assessment']}")
 
     if bias_analysis['detected_biases']:
-        print(f"\n🚩 Detected {len(bias_analysis['detected_biases'])} potential biases:")
+        print(f"\nDetected {len(bias_analysis['detected_biases'])} potential biases:")
         for bias in bias_analysis['detected_biases'][:3]:
             print(f"  - {bias['type']} (Severity: {bias['severity']})")
     else:
-        print("\n✅ No significant biases detected")
+        print("\nNo significant biases detected")
 
     print()
 
@@ -76,5 +76,5 @@ if __name__ == "__main__":
     }
 
     result = bias_detector_node(state)
-    print("\n✅ Bias analysis complete")
+    print("\nBias analysis complete")
     print(f"Result keys: {list(result.keys())}")

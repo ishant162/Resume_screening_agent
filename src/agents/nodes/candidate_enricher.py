@@ -60,10 +60,10 @@ class CandidateEnricher:
             tools = plan.get("tools", [])
 
             if not tools:
-                print(f"  ⏭️  Skipping {candidate_name} - no tools needed")
+                print(f" Skipping {candidate_name} - no tools needed")
                 continue
 
-            print(f"  🔧 Enriching {candidate_name} with tools: {', '.join(tools)}")
+            print(f" Enriching {candidate_name} with tools: {', '.join(tools)}")
 
             # Execute web search
             if "web_search" in tools:
@@ -83,7 +83,7 @@ class CandidateEnricher:
                 if taxonomy_data:
                     skill_taxonomy_data[candidate_name] = taxonomy_data
 
-        print("\n✅ Enrichment complete:")
+        print("\nEnrichment complete:")
         print(f"  - Companies verified: {len(company_verifications)}")
         print(f"  - GitHub profiles analyzed: {len(github_analyses)}")
         print(f"  - Skills taxonomized: {len(skill_taxonomy_data)}")
@@ -167,7 +167,7 @@ def candidate_enricher_node(state: dict) -> dict:
     Executes the tool plan created by the coordinator.
     """
     print("="*80)
-    print("⚡ CANDIDATE ENRICHER - EXECUTING TOOLS")
+    print("CANDIDATE ENRICHER - EXECUTING TOOLS")
     print("="*80 + "\n")
 
     enricher = CandidateEnricher()
@@ -209,7 +209,7 @@ if __name__ == "__main__":
     enricher = CandidateEnricher()
     result = enricher.enrich_candidates(candidates, tool_plan)
 
-    print("\n✅ Enrichment Result:")
+    print("\nEnrichment Result:")
     print(f"Companies: {list(result['company_verifications'].keys())}")
     print(f"GitHub: {list(result['github_analyses'].keys())}")
     print(f"Taxonomy: {list(result['skill_taxonomy_data'].keys())}")

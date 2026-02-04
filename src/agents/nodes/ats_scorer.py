@@ -17,7 +17,7 @@ def ats_scorer_node(state: dict) -> dict:
     in Applicant Tracking Systems.
     """
     print("="*80)
-    print("📋 ATS SCORER - RESUME OPTIMIZATION ANALYSIS")
+    print("ATS SCORER - RESUME OPTIMIZATION ANALYSIS")
     print("="*80 + "\n")
 
     scorer = ATSScorer()
@@ -53,10 +53,10 @@ def ats_scorer_node(state: dict) -> dict:
 
         ats_scores[candidate_name] = score_result
 
-        print(f"  ✅ ATS Score: {score_result['overall_score']:.1f}/100 "
+        print(f" ATS Score: {score_result['overall_score']:.1f}/100 "
               f"({score_result['ats_readiness']})")
 
-    print(f"\n✅ ATS scoring complete for {len(ats_scores)} candidates\n")
+    print(f"\nATS scoring complete for {len(ats_scores)} candidates\n")
 
     return {
         "ats_scores": ats_scores,
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     }
 
     result = ats_scorer_node(state)
-    print("\n✅ ATS scoring complete")
+    print("\nATS scoring complete")
 
     for name, score in result["ats_scores"].items():
         print(f"\n{name}:")

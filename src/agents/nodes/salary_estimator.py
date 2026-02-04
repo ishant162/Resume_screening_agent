@@ -15,7 +15,7 @@ def salary_estimator_node(state: dict) -> dict:
     Provides compensation benchmarking for hiring decisions.
     """
     print("="*80)
-    print("💰 SALARY ESTIMATOR - COMPENSATION ANALYSIS")
+    print("SALARY ESTIMATOR - COMPENSATION ANALYSIS")
     print("="*80 + "\n")
 
     estimator = SalaryEstimator()
@@ -35,9 +35,9 @@ def salary_estimator_node(state: dict) -> dict:
         salary_estimates[candidate_name] = estimate
 
         median = estimate["adjusted_range"]["median"]
-        print(f"  ✅ Median estimate: ${median:,}")
+        print(f"  Median estimate: ${median:,}")
 
-    print(f"\n✅ Salary estimation complete for {len(salary_estimates)} candidates\n")
+    print(f"\nSalary estimation complete for {len(salary_estimates)} candidates\n")
 
     return {
         "salary_estimates": salary_estimates,
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     }
 
     result = salary_estimator_node(state)
-    print("\n✅ Salary estimation complete")
+    print("\nSalary estimation complete")
 
     for name, estimate in result["salary_estimates"].items():
         print(f"\n{name}:")

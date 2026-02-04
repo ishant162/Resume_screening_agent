@@ -46,13 +46,13 @@ class ToolCoordinator:
                 }
             }
         """
-        print("🧠 Tool Coordinator: Analyzing candidates and planning tool usage...\n")
+        print(" Tool Coordinator: Analyzing candidates and planning tool usage...\n")
 
         tool_plan = {}
 
         for candidate in candidates:
             candidate_name = candidate.get("name", "Unknown")
-            print(f"  🔍 Planning tools for {candidate_name}...")
+            print(f" Planning tools for {candidate_name}...")
 
             # Let LLM decide which tools to use
             plan = self._decide_tools_for_candidate(candidate, job_requirements)
@@ -62,7 +62,7 @@ class ToolCoordinator:
             print(f"    Tools: {tools_str}")
             print(f"    Reasoning: {plan['reasoning']}")
 
-        print(f"\n✅ Tool coordination complete for {len(candidates)} candidates\n")
+        print(f"\n Tool coordination complete for {len(candidates)} candidates\n")
 
         return tool_plan
 
@@ -122,7 +122,7 @@ class ToolCoordinator:
             return plan
 
         except Exception as e:
-            print(f"    ⚠️  Tool planning failed for {candidate.get('name')}: {e}")
+            print(f" Tool planning failed for {candidate.get('name')}: {e}")
             # Default fallback: use skill taxonomy for everyone
             return {
                 "tools": ["skill_taxonomy"],
@@ -175,7 +175,7 @@ def tool_coordinator_node(state: dict) -> dict:
     running all tools for everyone.
     """
     print("="*80)
-    print("🧠 TOOL COORDINATOR - AGENTIC DECISION MAKING")
+    print(" TOOL COORDINATOR - AGENTIC DECISION MAKING")
     print("="*80 + "\n")
 
     coordinator = ToolCoordinator()

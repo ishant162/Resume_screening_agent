@@ -172,15 +172,15 @@ class EnhancedSkillMatcher:
             return response.content.strip()
 
         except Exception as e:
-            print(f"    ⚠️  Enhanced gap analysis failed: {e}")
+            print(f" Enhanced gap analysis failed: {e}")
             # Fallback
             analysis = f"Skill Analysis for {candidate.name}:\n\n"
             if matched_must:
-                analysis += f"✅ Matches {len(matched_must)} critical skills.\n"
+                analysis += f" Matches {len(matched_must)} critical skills.\n"
             if equivalent_matches:
-                analysis += f"🔄 Has {len(equivalent_matches)} equivalent skills that transfer well.\n"
+                analysis += f" Has {len(equivalent_matches)} equivalent skills that transfer well.\n"
             if missing_must:
-                analysis += f"❌ Missing {len(missing_must)} must-have skills: {', '.join(missing_must)}.\n"
+                analysis += f" Missing {len(missing_must)} must-have skills: {', '.join(missing_must)}.\n"
             return analysis
 
     def _format_equivalent_matches(self, equivalent_matches: dict) -> str:
@@ -201,7 +201,7 @@ def skill_matcher_enhanced_node(state: dict) -> dict:
     """
     LangGraph node: Enhanced skill matching with taxonomy
     """
-    print("🎯 Enhanced Skill Matcher: Semantic matching with taxonomy...\n")
+    print(" Enhanced Skill Matcher: Semantic matching with taxonomy...\n")
 
     matcher = EnhancedSkillMatcher()
 
@@ -220,9 +220,9 @@ def skill_matcher_enhanced_node(state: dict) -> dict:
         skill_score = matcher.match_skills(candidate, job_req, candidate_taxonomy)
         skill_scores.append(skill_score.model_dump())
 
-        print(f"  ✅ {candidate.name}: {skill_score.overall_skill_score:.1f}% match")
+        print(f" {candidate.name}: {skill_score.overall_skill_score:.1f}% match")
 
-    print("✅ Enhanced skill matching complete\n")
+    print(" Enhanced skill matching complete\n")
 
     return {
         "skill_scores": skill_scores,

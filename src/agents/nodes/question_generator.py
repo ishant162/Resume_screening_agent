@@ -29,7 +29,7 @@ class QuestionGenerator:
         Returns:
             Dictionary mapping candidate names to question lists
         """
-        print("🎤 Generating personalized interview questions...")
+        print("Generating personalized interview questions...")
 
         job_req = JobRequirements(**job_requirements)
         candidate_models = [Candidate(**c) for c in candidates]
@@ -45,7 +45,7 @@ class QuestionGenerator:
             )
             all_questions[candidate.name] = questions
 
-            print(f"  ✅ Generated {len(questions)} questions for {candidate.name}")
+            print(f"Generated {len(questions)} questions for {candidate.name}")
 
         return all_questions
 
@@ -112,11 +112,11 @@ class QuestionGenerator:
             if isinstance(questions, list):
                 return questions
             else:
-                print("    ⚠️  LLM returned non-list format")
+                print(" LLM returned non-list format")
                 return self._generate_fallback_questions(candidate, job_requirements)
 
         except Exception as e:
-            print(f"    ⚠️  Question generation failed: {e}")
+            print(f" Question generation failed: {e}")
             return self._generate_fallback_questions(candidate, job_requirements)
 
     def _generate_fallback_questions(
@@ -163,7 +163,7 @@ def question_generator_node(state: dict) -> dict:
     """
     LangGraph node: Generate interview questions for all candidates
     """
-    print("🎤 Generating personalized interview questions...")
+    print("Generating personalized interview questions...")
 
     generator = QuestionGenerator()
 
@@ -173,7 +173,7 @@ def question_generator_node(state: dict) -> dict:
         state["candidate_scores"]
     )
 
-    print(f"✅ Generated questions for {len(questions)} candidates\n")
+    print(f"Generated questions for {len(questions)} candidates\n")
 
     return {
         "interview_questions": questions,
@@ -281,7 +281,7 @@ if __name__ == "__main__":
     questions = generator._generate_questions_for_candidate(candidate, job, candidate_score)
 
     print("\n" + "="*80)
-    print(f"✅ INTERVIEW QUESTIONS FOR {candidate.name}")
+    print(f"INTERVIEW QUESTIONS FOR {candidate.name}")
     print("="*80)
     print(f"\nGenerated {len(questions)} personalized questions:\n")
 

@@ -120,7 +120,7 @@ def job_analyzer_node(state: dict) -> dict:
     This is the actual node function that LangGraph will call.
     It takes the state, runs the analyzer, and returns updated state.
     """
-    print("🔍 Analyzing job description...")
+    print("Analyzing job description...")
 
     analyzer = JobAnalyzer()
     job_requirements = analyzer.analyze(state["job_description"])
