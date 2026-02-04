@@ -1,51 +1,51 @@
-# **Resume Screening AI Agent** 🤖
+# **Resume Screening Agentic System**
 
 An advanced, agentic AI system for automated resume screening that uses LangGraph, multiple LLMs, and intelligent tool orchestration to evaluate candidates fairly, comprehensively, and efficiently.
 
 ---
 
-## **🌟 Project Overview**
+## **Project Overview**
 
 This project demonstrates a **production-grade agentic AI system** that goes beyond simple automation. The agent:
 
-- 🧠 **Makes intelligent decisions** about which tools to use for each candidate
-- 🔍 **Enriches data** using web search, GitHub analysis, and semantic skill matching
-- ✅ **Reviews its own work** through self-reflection and can trigger re-analysis
-- ⚖️ **Ensures fairness** with bias detection and ethical screening practices
-- 💼 **Provides comprehensive insights** including salary estimates and ATS scoring
+- **Makes intelligent decisions** about which tools to use for each candidate
+- **Enriches data** using web search, GitHub analysis, and semantic skill matching
+- **Reviews its own work** through self-reflection and can trigger re-analysis
+- **Ensures fairness** with bias detection and ethical screening practices
+- **Provides comprehensive insights** including salary estimates and ATS scoring
 
 ---
 
-## **✨ Key Features**
+## **Key Features**
 
 ### **Core Capabilities**
-- 📄 **Automated Resume Parsing** - Extracts structured data from PDF resumes
-- 🎯 **Intelligent Skill Matching** - Semantic understanding (e.g., TensorFlow ≈ PyTorch)
-- 💼 **Experience Analysis** - Evaluates career trajectory and relevance
-- 🎓 **Education Verification** - Handles global degrees and equivalencies
-- 🏆 **Scoring & Ranking** - Multi-factor weighted scoring system
-- 📊 **Comprehensive Reports** - Professional markdown reports with detailed analysis
-- 🎤 **Interview Questions** - Personalized questions for each candidate
+- **Automated Resume Parsing** - Extracts structured data from PDF resumes
+- **Intelligent Skill Matching** - Semantic understanding (e.g., TensorFlow ≈ PyTorch)
+- **Experience Analysis** - Evaluates career trajectory and relevance
+- **Education Verification** - Handles global degrees and equivalencies
+- **Scoring & Ranking** - Multi-factor weighted scoring system
+- **Comprehensive Reports** - Professional markdown reports with detailed analysis
+- **Interview Questions** - Personalized questions for each candidate
 
 ### **Agentic Enhancements** 🚀
-- 🧠 **Tool Coordinator** - LLM decides which tools to use per candidate (not all candidates need all tools)
-- 🔍 **Company Verification** - Web search to validate companies and understand tech stacks
-- 💻 **GitHub Analysis** - Validates coding skills through repository analysis
-- 🔗 **Skill Taxonomy** - Semantic matching for related skills
-- ✅ **Quality Checker** - Self-reflection mechanism that can trigger re-analysis
-- ⚖️ **Bias Detection** - Identifies potential hiring biases
-- 💰 **Salary Estimation** - Provides compensation benchmarking
-- 📋 **ATS Scoring** - Evaluates resume optimization for Applicant Tracking Systems
+- **Tool Coordinator** - LLM decides which tools to use per candidate (not all candidates need all tools)
+- **Company Verification** - Web search to validate companies and understand tech stacks
+- **GitHub Analysis** - Validates coding skills through repository analysis
+- **Skill Taxonomy** - Semantic matching for related skills
+- **Quality Checker** - Self-reflection mechanism that can trigger re-analysis
+- **Bias Detection** - Identifies potential hiring biases
+- **Salary Estimation** - Provides compensation benchmarking
+- **ATS Scoring** - Evaluates resume optimization for Applicant Tracking Systems
 
 ### **Workflow Features**
-- 🔄 **Conditional Routing** - Self-reflection can loop back for deeper analysis
-- 🎯 **Adaptive Processing** - Different candidates take different paths based on data quality
-- 🛡️ **Error Handling** - Graceful fallbacks throughout the pipeline
-- 📈 **Scalable Architecture** - Modular design for easy extension
+- **Conditional Routing** - Self-reflection can loop back for deeper analysis
+- **Adaptive Processing** - Different candidates take different paths based on data quality
+- **Error Handling** - Graceful fallbacks throughout the pipeline
+- **Scalable Architecture** - Modular design for easy extension
 
 ---
 
-## **🏗️ Architecture**
+## **Architecture**
 
 ### **High-Level Workflow**
 ```
@@ -100,7 +100,7 @@ END
 
 ---
 
-## **🚀 Getting Started**
+## **Getting Started**
 
 ### **Prerequisites**
 
@@ -157,7 +157,7 @@ END
 
 ---
 
-## **💡 Usage**
+## **Usage**
 
 ### **Basic Workflow** (Fast, no tools)
 ```bash
@@ -191,7 +191,7 @@ python scripts/run_enhanced_agent.py \
 
 ---
 
-## **📊 Output**
+## **Output**
 
 The agent generates two main files in the output directory:
 
@@ -221,7 +221,7 @@ Personalized interview questions for each candidate, organized by:
 
 ---
 
-## **⚙️ Configuration**
+## **Configuration**
 
 ### **Scoring Weights**
 
@@ -247,7 +247,7 @@ Edit in respective tool files:
 
 ---
 
-## **🎯 Key Agentic Features Explained**
+## **Key Agentic Features Explained**
 
 ### **1. Tool Coordinator (Intelligent Tool Selection)**
 
@@ -287,7 +287,7 @@ Uses web search to:
 
 ---
 
-## **📈 Performance & Scalability**
+## **Performance & Scalability**
 
 - **Processing Time**: ~2-3 minutes per candidate (with full tools)
 - **Parallelization**: Candidate enrichment can be parallelized
@@ -296,7 +296,7 @@ Uses web search to:
 
 ---
 
-## **🛡️ Ethical Considerations**
+## **Ethical Considerations**
 
 ### **Bias Detection**
 
@@ -321,24 +321,7 @@ The system actively checks for:
 
 ---
 
-## **🔮 Future Enhancements**
-
-Potential additions for even more capability:
-
-- [ ] LinkedIn profile enrichment
-- [ ] Multi-language resume support
-- [ ] Video interview analysis
-- [ ] Real-time ATS integration
-- [ ] Candidate communication automation
-- [ ] A/B testing for job descriptions
-- [ ] Diversity metrics dashboard
-- [ ] Integration with HRIS systems
-- [ ] Streamlit UI for visual interaction
-- [ ] Batch processing for 100+ candidates
-
----
-
-## **👤 Author**
+## **Author**
 
 **[Ishant Thakare]**
 - LinkedIn: [https://linkedin.com/in/ishant-thakare-04074519b]
@@ -346,10 +329,10 @@ Potential additions for even more capability:
 
 ---
 
-**Built with ❤️ and 🤖 by [Ishant Thakare]**
+**Built with ❤️ by [Ishant Thakare]**
 
 *Showcasing the power of agentic AI for real-world applications*
 
 ---
 
-**⭐ If you found this project helpful, please star the repository!**
+**If you found this project helpful, please star the repository!**
