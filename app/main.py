@@ -235,7 +235,7 @@ def render_sidebar():
         """)
 
         st.markdown("---")
-        st.caption("Built with LangGraph & GPT-4")
+        st.caption("Built with LangGraph by Ishant Thakare")
 
 
 def render_upload_page():
