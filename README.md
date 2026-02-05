@@ -48,7 +48,7 @@ This project demonstrates a **production-grade agentic AI system** that goes bey
 ## **Architecture**
 
 ### **High-Level Workflow**
-
+<img width="3121" height="7578" alt="resume_screening_architecture_v3" src="https://github.com/user-attachments/assets/c4531d35-1ce8-4d1b-bd40-efd29551db23" />
 
 ### **Tech Stack**
 
