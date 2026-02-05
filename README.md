@@ -151,6 +151,11 @@ python scripts/run_enhanced_agent.py \
     --verbose
 ```
 
+### **With Streamlit UI**
+```bash
+streamlit run app/main.py
+```
+
 ---
 
 ## **Output**
