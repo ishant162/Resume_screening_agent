@@ -1,0 +1,54 @@
+Federated Learning & Agentic AI Engineer
+
+We are seeking a skilled Federated Learning & Agentic AI Engineer to build privacy-preserving ML systems and autonomous AI agents for real-world production use.
+
+⸻
+
+Requirements:
+
+Technical Skills:
+Must Have:
+	•	Strong proficiency in Python (async/await, concurrency, clean architecture)
+	•	Solid understanding of Machine Learning & Deep Learning fundamentals
+	•	Hands-on experience with Federated Learning concepts (aggregator–collaborator workflows, data locality, privacy)
+	•	Experience building Agentic AI systems (planning, tool calling, memory, feedback loops)
+	•	Familiarity with LLMs and prompt engineering basics
+	•	Experience designing APIs (REST and/or gRPC)
+
+Nice to Have:
+	•	Experience with Agentic frameworks such as LangGraph, AutoGen, CrewAI, or custom agent loops
+	•	Knowledge of secure aggregation, differential privacy, or encryption techniques
+	•	Experience with RAG pipelines and evaluation strategies
+	•	Docker, Kubernetes, and cloud platforms (AWS / GCP / Azure)
+	•	Exposure to open-source ML or Federated Learning frameworks
+
+⸻
+
+Experience:
+	•	2+ years of professional experience in AI/ML or backend engineering
+	•	Experience building distributed or asynchronous systems
+	•	Prior work on production ML pipelines or AI agents
+	•	Ability to debug and optimize complex AI workflows
+
+⸻
+
+Education:
+	•	Bachelor’s degree in Computer Science, Engineering, or related field
+	•	Master’s degree or relevant certifications are a plus
+
+⸻
+
+Responsibilities:
+	•	Design and implement Federated Learning frameworks and workflows
+	•	Build and orchestrate Agentic AI systems with autonomy and reliability
+	•	Integrate LLMs with tools, ML pipelines, and external services
+	•	Develop scalable, async-first backend services
+	•	Collaborate with research, product, and engineering teams
+	•	Ensure robustness, observability, and performance of AI systems
+	•	Stay up to date with advancements in Federated Learning and Agentic AI
+
+⸻
+
+About Us:
+
+We build next-generation AI systems where privacy, autonomy, and scale matter. Our work spans Federated Learning, distributed systems, and Agentic AI deployed in real production environments. We offer a collaborative culture, technical ownership, and room to experiment.

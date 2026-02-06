@@ -5,6 +5,7 @@ langchain-openai
 langchain-core
 langchain-community
 langchain-groq
+langchain-ollama
 
 # Pydantic
 pydantic
