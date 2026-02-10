@@ -4,8 +4,8 @@ from datetime import date, datetime
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import RESUME_PARSING_PROMPT
+from src.data_models import Candidate, Education, Project, WorkExperience
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, Education, Project, WorkExperience
 from src.tools.pdf_extractor import PDFExtractor
 from src.tools.text_processor import TextProcessor
 

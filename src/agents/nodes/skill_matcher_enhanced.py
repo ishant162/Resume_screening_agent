@@ -8,8 +8,8 @@ Understands that TensorFlow ≈ PyTorch, React → Vue, etc.
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import SEMANTIC_SKILL_MATCH_ANALYSIS_PROMPT
+from src.data_models import Candidate, JobRequirements, SkillScore
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, JobRequirements, SkillScore
 from src.tools import SkillTaxonomy
 
 

@@ -3,14 +3,14 @@ import json
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import JOB_ANALYSIS_PROMPT
-from src.llm.groq_llm import GroqLLM
-from src.models import (
+from src.data_models import (
     EducationRequirement,
     ExperienceRequirement,
     JobRequirements,
     Skill,
     SkillPriority,
 )
+from src.llm.groq_llm import GroqLLM
 
 
 class JobAnalyzer:

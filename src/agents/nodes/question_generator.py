@@ -1,8 +1,8 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import INTERVIEW_QUESTION_GENERATION_PROMPT
+from src.data_models import Candidate, CandidateScore, JobRequirements
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, CandidateScore, JobRequirements
 
 
 class QuestionGenerator:
@@ -188,7 +188,7 @@ def question_generator_node(state: dict) -> dict:
 if __name__ == "__main__":
     from datetime import date
 
-    from src.models import (
+    from src.data_models import (
         EducationRequirement,
         EducationScore,
         ExperienceRequirement,

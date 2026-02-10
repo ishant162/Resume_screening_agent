@@ -5,8 +5,7 @@ from config.prompts import (
     FINAL_CANDIDATE_ASSESSMENT_PROMPT,
 )
 from config.settings import settings
-from src.llm.groq_llm import GroqLLM
-from src.models import (
+from src.data_models import (
     Candidate,
     CandidateScore,
     EducationScore,
@@ -15,6 +14,7 @@ from src.models import (
     RankedCandidate,
     SkillScore,
 )
+from src.llm.groq_llm import GroqLLM
 
 
 class CandidateScorer:
@@ -375,7 +375,7 @@ def scorer_node(state: dict) -> dict:
 
 # Test independently
 if __name__ == "__main__":
-    from src.models import (
+    from src.data_models import (
         EducationRequirement,
         ExperienceRequirement,
         Skill,

@@ -3,8 +3,8 @@ import json
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import SKILL_MATCHING_PROMPT
+from src.data_models import Candidate, JobRequirements, Skill, SkillPriority, SkillScore
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, JobRequirements, Skill, SkillPriority, SkillScore
 
 
 class SkillMatcher:
@@ -189,7 +189,7 @@ def skill_matcher_node(state: dict) -> dict:
 
 # Test independently
 if __name__ == "__main__":
-    from src.models import EducationRequirement, ExperienceRequirement, Project
+    from src.data_models import EducationRequirement, ExperienceRequirement, Project
 
     # Mock job requirements
     job = JobRequirements(

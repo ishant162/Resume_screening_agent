@@ -191,7 +191,7 @@ def tool_coordinator_node(state: dict) -> dict:
 
 # Test
 if __name__ == "__main__":
-    from src.models import (
+    from src.data_models import (
         Candidate,
         EducationRequirement,
         ExperienceRequirement,

@@ -9,8 +9,8 @@ import json
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import COMPANY_CONTEXT_EXPERIENCE_ANALYSIS_PROMPT
+from src.data_models import Candidate, ExperienceScore, JobRequirements
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, ExperienceScore, JobRequirements
 
 
 class EnhancedExperienceAnalyzer:

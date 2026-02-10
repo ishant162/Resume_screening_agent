@@ -1,8 +1,8 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import EDUCATION_VERIFICATION_PROMPT
+from src.data_models import Candidate, Education, EducationScore, JobRequirements
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, Education, EducationScore, JobRequirements
 
 
 class EducationVerifier:
@@ -249,7 +249,7 @@ def education_verifier_node(state: dict) -> dict:
 
 # Test independently
 if __name__ == "__main__":
-    from src.models import (
+    from src.data_models import (
         Certification,
         Education,
         EducationRequirement,

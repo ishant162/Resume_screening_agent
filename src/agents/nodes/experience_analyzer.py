@@ -7,8 +7,8 @@ from config.prompts import (
     EXPERIENCE_ASSESSMENT_PROMPT,
     WORK_EXPERIENCE_RELEVANCE_PROMPT,
 )
+from src.data_models import Candidate, ExperienceScore, JobRequirements, WorkExperience
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, ExperienceScore, JobRequirements, WorkExperience
 
 
 class ExperienceAnalyzer:
@@ -423,7 +423,11 @@ def experience_analyzer_node(state: dict) -> dict:
 if __name__ == "__main__":
     from datetime import date
 
-    from src.models import EducationRequirement, ExperienceRequirement, WorkExperience
+    from src.data_models import (
+        EducationRequirement,
+        ExperienceRequirement,
+        WorkExperience,
+    )
 
     # Mock job requirements
     job = JobRequirements(
