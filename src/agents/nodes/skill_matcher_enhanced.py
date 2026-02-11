@@ -24,7 +24,6 @@ class EnhancedSkillMatcher:
         self,
         candidate: Candidate,
         job_requirements: JobRequirements,
-        taxonomy_data: dict = None,
     ) -> SkillScore:
         """
         Enhanced skill matching using taxonomy
@@ -32,65 +31,26 @@ class EnhancedSkillMatcher:
         Args:
             candidate: Candidate model
             job_requirements: Job requirements model
-            taxonomy_data: Pre-computed taxonomy data (optional)
+            taxonomy_data: Pre-computed taxonomy data (optional, currently unused)
 
         Returns:
             SkillScore with enhanced matching
         """
-        candidate_skills_set = set(skill.lower() for skill in candidate.all_skills)
-
-        must_have_skills = job_requirements.must_have_skills
-        nice_to_have_skills = job_requirements.nice_to_have_skills
-
-        # Enhanced matching with taxonomy
-        matched_must_have = []
-        missing_must_have = []
-        equivalent_matches = {}  # Track equivalent skills
-
-        for required_skill in must_have_skills:
-            # Check exact match first
-            if required_skill.name.lower() in candidate_skills_set:
-                matched_must_have.append(required_skill.name)
-            else:
-                # Check for equivalent/related skills using taxonomy
-                match_found = False
-
-                for cand_skill in candidate.technical_skills:
-                    enhancement = self.taxonomy.enhance_skill_matching(
-                        required_skill.name, [cand_skill]
-                    )
-
-                    if enhancement["match_score"] >= 0.7:  # 70% threshold
-                        matched_must_have.append(required_skill.name)
-                        equivalent_matches[required_skill.name] = {
-                            "candidate_skill": cand_skill,
-                            "match_score": enhancement["match_score"],
-                            "reasoning": enhancement["reasoning"],
-                        }
-                        match_found = True
-                        break
-
-                if not match_found:
-                    missing_must_have.append(required_skill.name)
+        # Match must-have skills
+        matched_must_have, missing_must_have, equivalent_matches = (
+            self._match_skill_list(
+                required_skills=job_requirements.must_have_skills,
+                candidate_skills=candidate.technical_skills,
+                threshold=0.7,
+            )
+        )
 
         # Match nice-to-have skills
-        matched_nice_to_have = []
-        missing_nice_to_have = []
-
-        for required_skill in nice_to_have_skills:
-            if required_skill.name.lower() in candidate_skills_set:
-                matched_nice_to_have.append(required_skill.name)
-            else:
-                # Quick taxonomy check
-                for cand_skill in candidate.technical_skills:
-                    is_equiv, score, _ = self.taxonomy.are_skills_equivalent(
-                        required_skill.name, cand_skill, threshold=0.6
-                    )
-                    if is_equiv:
-                        matched_nice_to_have.append(required_skill.name)
-                        break
-                else:
-                    missing_nice_to_have.append(required_skill.name)
+        matched_nice_to_have, missing_nice_to_have, _ = self._match_skill_list(
+            required_skills=job_requirements.nice_to_have_skills,
+            candidate_skills=candidate.technical_skills,
+            threshold=0.6,
+        )
 
         # Find additional skills
         all_required_skill_names = set(
@@ -102,34 +62,27 @@ class EnhancedSkillMatcher:
             if skill.lower() not in all_required_skill_names
         ]
 
-        # Calculate match percentages
-        must_have_match_pct = (
-            (len(matched_must_have) / len(must_have_skills) * 100)
-            if must_have_skills
-            else 100.0
+        # Calculate scores
+        must_have_match_pct = self._calculate_percentage(
+            matched_must_have, job_requirements.must_have_skills
+        )
+        nice_to_have_match_pct = self._calculate_percentage(
+            matched_nice_to_have, job_requirements.nice_to_have_skills
         )
 
-        nice_to_have_match_pct = (
-            (len(matched_nice_to_have) / len(nice_to_have_skills) * 100)
-            if nice_to_have_skills
-            else 100.0
-        )
-
-        # Overall skill score with taxonomy bonus
+        # Overall score with bonus for equivalent matches
         base_score = (must_have_match_pct * 0.8) + (nice_to_have_match_pct * 0.2)
-
-        # Bonus for equivalent matches (shows adaptability)
         equiv_bonus = min(5, len(equivalent_matches) * 2)
         overall_score = min(100, base_score + equiv_bonus)
 
-        # Generate enhanced gap analysis
-        gap_analysis = self._generate_enhanced_gap_analysis(
-            candidate,
-            matched_must_have,
-            missing_must_have,
-            equivalent_matches,
-            matched_nice_to_have,
-            additional_skills,
+        # Generate gap analysis
+        gap_analysis = self._generate_gap_analysis(
+            candidate=candidate,
+            matched_must=matched_must_have,
+            missing_must=missing_must_have,
+            equivalent_matches=equivalent_matches,
+            matched_nice=matched_nice_to_have,
+            additional=additional_skills,
         )
 
         return SkillScore(
@@ -145,7 +98,65 @@ class EnhancedSkillMatcher:
             skill_gap_analysis=gap_analysis,
         )
 
-    def _generate_enhanced_gap_analysis(
+    def _match_skill_list(
+        self, required_skills: list, candidate_skills: list[str], threshold: float
+    ) -> tuple[list[str], list[str], dict]:
+        """
+        Match a list of required skills against candidate skills
+
+        Args:
+            required_skills: List of required skill objects
+            candidate_skills: List of candidate's technical skills
+            candidate_all_skills: Set of all candidate skills (lowercase)
+            threshold: Match score threshold for equivalence
+
+        Returns:
+            Tuple of (matched_skills, missing_skills, equivalent_matches)
+        """
+        matched = []
+        missing = []
+        equivalent_matches = {}
+
+        for required_skill in required_skills:
+            required_skill_lower = required_skill.name.lower()
+            # Check exact match first (case-insensitive) in ALL skills
+            exact_match_found = False
+            for cand_skill in candidate_skills:
+                if required_skill_lower == cand_skill.lower():
+                    matched.append(required_skill.name)
+                    exact_match_found = True
+                    break
+            if exact_match_found:
+                continue
+
+            # Check for equivalent skills using taxonomy
+            match_found = False
+            for cand_skill in candidate_skills:
+                is_equiv, score, reasoning = self.taxonomy.are_skills_equivalent(
+                    required_skill.name, cand_skill, threshold=threshold
+                )
+                if is_equiv:
+                    matched.append(required_skill.name)
+                    equivalent_matches[required_skill.name] = {
+                        "candidate_skill": cand_skill,
+                        "match_score": score,
+                        "reasoning": reasoning,
+                    }
+                    match_found = True
+                    break
+
+            if not match_found:
+                missing.append(required_skill.name)
+
+        return matched, missing, equivalent_matches
+
+    def _calculate_percentage(self, matched: list, required: list) -> float:
+        """Calculate match percentage"""
+        if not required:
+            return 100.0
+        return (len(matched) / len(required)) * 100
+
+    def _generate_gap_analysis(
         self,
         candidate: Candidate,
         matched_must: list[str],
@@ -154,8 +165,7 @@ class EnhancedSkillMatcher:
         matched_nice: list[str],
         additional: list[str],
     ) -> str:
-        """Generate enhanced gap analysis mentioning equivalent skills"""
-
+        """Generate gap analysis using LLM"""
         prompt = SEMANTIC_SKILL_MATCH_ANALYSIS_PROMPT.format(
             candidate_name=candidate.name,
             matched_must_have=", ".join(matched_must) if matched_must else "None",
@@ -172,61 +182,60 @@ class EnhancedSkillMatcher:
                 ),
                 HumanMessage(content=prompt),
             ]
-
             response = self.llm.invoke(messages)
             return response.content.strip()
 
         except Exception as e:
-            print(f" Enhanced gap analysis failed: {e}")
-            # Fallback
-            analysis = f"Skill Analysis for {candidate.name}:\n\n"
-            if matched_must:
-                analysis += f" Matches {len(matched_must)} critical skills.\n"
-            if equivalent_matches:
-                analysis += f" Has {len(equivalent_matches)} equivalent skills that transfer well.\n"
-            if missing_must:
-                analysis += f" Missing {len(missing_must)} must-have skills: {', '.join(missing_must)}.\n"
-            return analysis
+            print(f"Gap analysis failed: {e}")
+            return self._generate_fallback_analysis(
+                candidate.name, matched_must, equivalent_matches, missing_must
+            )
+
+    def _generate_fallback_analysis(
+        self,
+        candidate_name: str,
+        matched_must: list[str],
+        equivalent_matches: dict,
+        missing_must: list[str],
+    ) -> str:
+        """Generate simple fallback analysis if LLM fails"""
+        analysis = f"Skill Analysis for {candidate_name}:\n\n"
+        if matched_must:
+            analysis += f"✓ Matches {len(matched_must)} critical skills.\n"
+        if equivalent_matches:
+            analysis += f"✓ Has {len(equivalent_matches)} equivalent skills that transfer well.\n"
+        if missing_must:
+            analysis += f"✗ Missing {len(missing_must)} must-have skills: {', '.join(missing_must)}.\n"
+        return analysis
 
     def _format_equivalent_matches(self, equivalent_matches: dict) -> str:
         """Format equivalent matches for display"""
         if not equivalent_matches:
             return "None"
 
-        lines = []
-        for required, match_info in equivalent_matches.items():
-            cand_skill = match_info["candidate_skill"]
-            score = match_info["match_score"]
-            lines.append(f"- {required} ≈ {cand_skill} (match: {score:.0%})")
-
-        return "\n".join(lines)
+        return "\n".join(
+            f"- {required} ≈ {info['candidate_skill']} (match: {info['match_score']:.0%})"
+            for required, info in equivalent_matches.items()
+        )
 
 
 def skill_matcher_enhanced_node(state: dict) -> dict:
-    """
-    LangGraph node: Enhanced skill matching with taxonomy
-    """
-    print(" Enhanced Skill Matcher: Semantic matching with taxonomy...\n")
+    """LangGraph node: Enhanced skill matching with taxonomy"""
+    print("Enhanced Skill Matcher: Semantic matching with taxonomy...\n")
 
     matcher = EnhancedSkillMatcher()
-
     job_req = JobRequirements(**state["job_requirements"])
-    taxonomy_data = state.get("skill_taxonomy_data", {})
 
     skill_scores = []
-
     for candidate_data in state["candidates"]:
         candidate = Candidate(**candidate_data)
 
-        # Get taxonomy data for this candidate
-        candidate_taxonomy = taxonomy_data.get(candidate.name, {})
-
-        print(f"  Analyzing {candidate.name}...")
-        skill_score = matcher.match_skills(candidate, job_req, candidate_taxonomy)
+        print(f"Analyzing {candidate.name}...")
+        skill_score = matcher.match_skills(candidate, job_req)
         skill_scores.append(skill_score.model_dump())
 
-        print(f" {candidate.name}: {skill_score.overall_skill_score:.1f}% match")
+        print(f"    {candidate.name}: {skill_score.overall_skill_score:.1f}% match")
 
-    print(" Enhanced skill matching complete\n")
+    print("Enhanced skill matching complete\n")
 
     return {"skill_scores": skill_scores, "current_step": "skill_matching_complete"}

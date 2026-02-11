@@ -12,6 +12,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from src.llm.groq_llm import GroqLLM
 from src.utils.utils import extract_response_text
 
+
 class SkillTaxonomy:
     """
     Intelligent skill taxonomy with semantic understanding

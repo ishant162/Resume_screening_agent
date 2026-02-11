@@ -253,6 +253,7 @@ class CandidateScorer:
 
             # Parse JSON
             import json
+
             response_text = extract_response_text(response)
             analysis = json.loads(response_text)
             return analysis

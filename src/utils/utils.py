@@ -12,7 +12,9 @@ def extract_response_text(response):
     if "```json" in response_text:
         # Split by ```json then split by next ```
         try:
-            response_text = response_text.split("```json", 1)[1].split("```", 1)[0].strip()
+            response_text = (
+                response_text.split("```json", 1)[1].split("```", 1)[0].strip()
+            )
         except IndexError:
             pass  # Leave original text if split fails
 

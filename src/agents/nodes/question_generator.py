@@ -104,6 +104,7 @@ class QuestionGenerator:
             response = self.llm.invoke(messages)
             # Parse JSON
             import json
+
             response_text = extract_response_text(response)
             questions = json.loads(response_text)
 

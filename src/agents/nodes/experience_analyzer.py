@@ -124,6 +124,7 @@ class ExperienceAnalyzer:
             response_text = extract_response_text(response)
             # Parse JSON response
             import json
+
             analysis = json.loads(response_text)
             return analysis
 
@@ -177,6 +178,7 @@ class ExperienceAnalyzer:
             response_text = extract_response_text(response)
             # Parse JSON
             import json
+
             analysis = json.loads(response_text)
             return analysis
 
