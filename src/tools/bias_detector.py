@@ -10,6 +10,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import HIRING_BIAS_ANALYSIS_PROMPT
 from src.llm.groq_llm import GroqLLM
+from src.utils.utils import extract_response_text
 
 
 class BiasDetector:
@@ -357,12 +358,8 @@ class BiasDetector:
             ]
 
             response = self.llm.invoke(messages)
-            response_text = response.content.strip()
-
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
-
-            result = json.loads(response_text.strip())
+            response_text = extract_response_text(response)
+            result = json.loads(response_text)
             return result
 
         except Exception as e:

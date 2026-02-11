@@ -7,8 +7,9 @@ from config.prompts import (
     EXPERIENCE_ASSESSMENT_PROMPT,
     WORK_EXPERIENCE_RELEVANCE_PROMPT,
 )
+from src.data_models import Candidate, ExperienceScore, JobRequirements, WorkExperience
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, ExperienceScore, JobRequirements, WorkExperience
+from src.utils.utils import extract_response_text
 
 
 class ExperienceAnalyzer:
@@ -120,17 +121,11 @@ class ExperienceAnalyzer:
             ]
 
             response = self.llm.invoke(messages)
-
+            response_text = extract_response_text(response)
             # Parse JSON response
             import json
 
-            response_text = response.content.strip()
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
-            elif "```" in response_text:
-                response_text = response_text.split("```")[1].split("```")[0]
-
-            analysis = json.loads(response_text.strip())
+            analysis = json.loads(response_text)
             return analysis
 
         except Exception as e:
@@ -180,17 +175,11 @@ class ExperienceAnalyzer:
             ]
 
             response = self.llm.invoke(messages)
-
+            response_text = extract_response_text(response)
             # Parse JSON
             import json
 
-            response_text = response.content.strip()
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
-            elif "```" in response_text:
-                response_text = response_text.split("```")[1].split("```")[0]
-
-            analysis = json.loads(response_text.strip())
+            analysis = json.loads(response_text)
             return analysis
 
         except Exception as e:
@@ -423,7 +412,11 @@ def experience_analyzer_node(state: dict) -> dict:
 if __name__ == "__main__":
     from datetime import date
 
-    from src.models import EducationRequirement, ExperienceRequirement, WorkExperience
+    from src.data_models import (
+        EducationRequirement,
+        ExperienceRequirement,
+        WorkExperience,
+    )
 
     # Mock job requirements
     job = JobRequirements(

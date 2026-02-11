@@ -5,8 +5,7 @@ from config.prompts import (
     FINAL_CANDIDATE_ASSESSMENT_PROMPT,
 )
 from config.settings import settings
-from src.llm.groq_llm import GroqLLM
-from src.models import (
+from src.data_models import (
     Candidate,
     CandidateScore,
     EducationScore,
@@ -15,6 +14,8 @@ from src.models import (
     RankedCandidate,
     SkillScore,
 )
+from src.llm.groq_llm import GroqLLM
+from src.utils.utils import extract_response_text
 
 
 class CandidateScorer:
@@ -253,13 +254,8 @@ class CandidateScorer:
             # Parse JSON
             import json
 
-            response_text = response.content.strip()
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
-            elif "```" in response_text:
-                response_text = response_text.split("```")[1].split("```")[0]
-
-            analysis = json.loads(response_text.strip())
+            response_text = extract_response_text(response)
+            analysis = json.loads(response_text)
             return analysis
 
         except Exception as e:
@@ -375,7 +371,7 @@ def scorer_node(state: dict) -> dict:
 
 # Test independently
 if __name__ == "__main__":
-    from src.models import (
+    from src.data_models import (
         EducationRequirement,
         ExperienceRequirement,
         Skill,

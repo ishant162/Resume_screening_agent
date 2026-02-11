@@ -3,14 +3,15 @@ import json
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import JOB_ANALYSIS_PROMPT
-from src.llm.groq_llm import GroqLLM
-from src.models import (
+from src.data_models import (
     EducationRequirement,
     ExperienceRequirement,
     JobRequirements,
     Skill,
     SkillPriority,
 )
+from src.llm.groq_llm import GroqLLM
+from src.utils.utils import extract_response_text
 
 
 class JobAnalyzer:
@@ -40,13 +41,8 @@ class JobAnalyzer:
 
         try:
             # Extract JSON from response (handle markdown code blocks)
-            response_text = response.content
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
-            elif "```" in response_text:
-                response_text = response_text.split("```")[1].split("```")[0]
-
-            job_data = json.loads(response_text.strip())
+            response_text = extract_response_text(response)
+            job_data = json.loads(response_text)
 
             # Convert to JobRequirements model
             job_requirements = self._convert_to_model(job_data, job_description)

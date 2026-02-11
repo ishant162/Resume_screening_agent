@@ -1,8 +1,9 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import INTERVIEW_QUESTION_GENERATION_PROMPT
+from src.data_models import Candidate, CandidateScore, JobRequirements
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, CandidateScore, JobRequirements
+from src.utils.utils import extract_response_text
 
 
 class QuestionGenerator:
@@ -101,17 +102,11 @@ class QuestionGenerator:
             ]
 
             response = self.llm.invoke(messages)
-
             # Parse JSON
             import json
 
-            response_text = response.content.strip()
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
-            elif "```" in response_text:
-                response_text = response_text.split("```")[1].split("```")[0]
-
-            questions = json.loads(response_text.strip())
+            response_text = extract_response_text(response)
+            questions = json.loads(response_text)
 
             # Validate it's a list
             if isinstance(questions, list):
@@ -188,7 +183,7 @@ def question_generator_node(state: dict) -> dict:
 if __name__ == "__main__":
     from datetime import date
 
-    from src.models import (
+    from src.data_models import (
         EducationRequirement,
         EducationScore,
         ExperienceRequirement,

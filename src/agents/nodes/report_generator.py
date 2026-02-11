@@ -4,11 +4,11 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import EXECUTIVE_CANDIDATE_SUMMARY_PROMPT
 from config.settings import settings
-from src.llm.groq_llm import GroqLLM
-from src.models import (
+from src.data_models import (
     JobRequirements,
     RankedCandidate,
 )
+from src.llm.groq_llm import GroqLLM
 
 
 class ReportGenerator:

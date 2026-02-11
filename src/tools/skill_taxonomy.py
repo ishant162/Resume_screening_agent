@@ -10,6 +10,7 @@ from fuzzywuzzy import fuzz
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from src.llm.groq_llm import GroqLLM
+from src.utils.utils import extract_response_text
 
 
 class SkillTaxonomy:
@@ -258,21 +259,7 @@ class SkillTaxonomy:
             ]
 
             response = self.llm.invoke(messages)
-            response_text = response.content.strip()
-
-            # Debug: Print what we got
-            # print(f"    DEBUG - Raw response: {response_text[:100]}")
-
-            # Remove any markdown code blocks
-            if "```json" in response_text:
-                response_text = (
-                    response_text.split("```json")[1].split("```")[0].strip()
-                )
-            elif "```" in response_text:
-                response_text = response_text.split("```")[1].split("```")[0].strip()
-
-            # Remove any leading/trailing whitespace
-            response_text = response_text.strip()
+            response_text = extract_response_text(response)
 
             # If response is empty, return default
             if not response_text:

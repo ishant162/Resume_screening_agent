@@ -11,6 +11,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import VERIFICATION_TOOL_SELECTION_PROMPT
 from src.llm.groq_llm import GroqLLM
+from src.utils.utils import extract_response_text
 
 
 class ToolCoordinator:
@@ -103,14 +104,8 @@ class ToolCoordinator:
             ]
 
             response = self.llm.invoke(messages)
-            response_text = response.content.strip()
-
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
-            elif "```" in response_text:
-                response_text = response_text.split("```")[1].split("```")[0]
-
-            plan = json.loads(response_text.strip())
+            response_text = extract_response_text(response)
+            plan = json.loads(response_text)
 
             # Validate tools list
             valid_tools = ["web_search", "github", "skill_taxonomy"]
@@ -191,7 +186,7 @@ def tool_coordinator_node(state: dict) -> dict:
 
 # Test
 if __name__ == "__main__":
-    from src.models import (
+    from src.data_models import (
         Candidate,
         EducationRequirement,
         ExperienceRequirement,

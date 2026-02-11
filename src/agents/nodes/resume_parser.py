@@ -4,10 +4,11 @@ from datetime import date, datetime
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import RESUME_PARSING_PROMPT
+from src.data_models import Candidate, Education, Project, WorkExperience
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, Education, Project, WorkExperience
 from src.tools.pdf_extractor import PDFExtractor
 from src.tools.text_processor import TextProcessor
+from src.utils.utils import extract_response_text
 
 
 class ResumeParser:
@@ -85,12 +86,7 @@ class ResumeParser:
 
         try:
             # Extract JSON from response
-            response_text = response.content
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
-            elif "```" in response_text:
-                response_text = response_text.split("```")[1].split("```")[0]
-
+            response_text = extract_response_text(response)
             candidate_data = json.loads(response_text.strip())
             return candidate_data
 

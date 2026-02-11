@@ -9,8 +9,9 @@ import json
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config.prompts import COMPANY_CONTEXT_EXPERIENCE_ANALYSIS_PROMPT
+from src.data_models import Candidate, ExperienceScore, JobRequirements
 from src.llm.groq_llm import GroqLLM
-from src.models import Candidate, ExperienceScore, JobRequirements
+from src.utils.utils import extract_response_text
 
 
 class EnhancedExperienceAnalyzer:
@@ -97,12 +98,9 @@ class EnhancedExperienceAnalyzer:
             ]
 
             response = self.llm.invoke(messages)
-            response_text = response.content.strip()
+            response_text = extract_response_text(response)
 
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
-
-            analysis = json.loads(response_text.strip())
+            analysis = json.loads(response_text)
             return analysis
 
         except Exception as e:
